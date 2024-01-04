@@ -18,23 +18,23 @@ enum platform {
 }
 
 model Member {
-  id           Int           @id @default(autoincrement())
-  socialId     Int           @map("social_id")
-  email        String?       @db.VarChar()
-  nickname     String?       @db.VarChar()
-  phoneNumber  String?       @map("phone_number") @db.VarChar()
-  profileImage String?       @map("profile_image") @db.VarChar()
-  platform     platform
-  blackList    Boolean       @map("black_list")
-  globalAccess Boolean       @map("global_access")
-  isAdmin      Boolean       @map("is_admin")
-  createdAt    DateTime      @default(now()) @map("created_at")
-  updatedAt    DateTime?     @updatedAt @map("updated_at")
-  deletedAt    DateTime?     @map("deleted_at")
-  AuthHistory  AuthHistory[]
-  BanedMember  BanedMember[]
-  Blog         Blog?
-  Comment      Comment[]
+  id            Int           @id @default(autoincrement())
+  socialId      Int           @map("social_id")
+  email         String?       @db.VarChar()
+  nickname      String?       @db.VarChar()
+  phoneNumber   String?       @map("phone_number") @db.VarChar()
+  profileImage  String?       @map("profile_image") @db.VarChar()
+  platform      platform
+  blackList     Boolean       @map("black_list")
+  globalAccess  Boolean       @map("global_access")
+  isAdmin       Boolean       @map("is_admin")
+  createdAt     DateTime      @default(now()) @map("created_at")
+  updatedAt     DateTime?     @updatedAt @map("updated_at")
+  deletedAt     DateTime?     @map("deleted_at")
+  authHistories AuthHistory[]
+  banedMembers  BanedMember[]
+  blog          Blog?
+  comments      Comment[]
 }
 
 enum action {
@@ -78,7 +78,7 @@ model Blog {
   updatedAt   DateTime? @updatedAt @map("updated_at")
   deletedAt   DateTime? @map("deleted_at")
   member      Member    @relation(fields: [memberId], references: [id])
-  Tag         Tag[]
+  tags        Tag[]
 }
 
 model Tag {
@@ -88,13 +88,12 @@ model Tag {
   createdAt DateTime   @default(now()) @map("created_at")
   updatedAt DateTime?  @updatedAt @map("updated_at")
   deletedAt DateTime?  @map("deleted_at")
-  blog      Blog       @relation(fields: [blogId], references: [id])
-  Document  Document[]
+  documents Document[] @relation("join:documentAndTag")
+  Blog      Blog       @relation(fields: [blogId], references: [id])
 }
 
 model Document {
   id            Int       @id @default(autoincrement())
-  tagId         Int       @map("tag_id")
   title         String    @db.VarChar()
   content       String
   allowComments Boolean   @map("allow_comments")
@@ -102,8 +101,8 @@ model Document {
   createdAt     DateTime  @default(now()) @map("created_at")
   updatedAt     DateTime? @updatedAt @map("updated_at")
   deletedAt     DateTime? @map("deleted_at")
-  tag           Tag[]
-  Comment       Comment[]
+  tags          Tag[]     @relation("join:documentAndTag")
+  comments      Comment[]
 }
 
 model Comment {
