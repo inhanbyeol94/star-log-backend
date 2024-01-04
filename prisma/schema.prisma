@@ -1,0 +1,120 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum platform {
+  KAKAO
+  GOOGLE
+  NAVER
+  APPLE
+}
+
+model Member {
+  id           Int           @id @default(autoincrement())
+  socialId     Int           @map("social_id")
+  email        String?       @db.VarChar()
+  nickname     String?       @db.VarChar()
+  phoneNumber  String?       @map("phone_number") @db.VarChar()
+  profileImage String?       @map("profile_image") @db.VarChar()
+  platform     platform
+  blackList    Boolean       @map("black_list")
+  globalAccess Boolean       @map("global_access")
+  isAdmin      Boolean       @map("is_admin")
+  createdAt    DateTime      @default(now()) @map("created_at")
+  updatedAt    DateTime?     @updatedAt @map("updated_at")
+  deletedAt    DateTime?     @map("deleted_at")
+  AuthHistory  AuthHistory[]
+  BanedMember  BanedMember[]
+  Blog         Blog?
+  Comment      Comment[]
+}
+
+enum action {
+  REQUEST
+  FAIL
+  SUCCESS
+  LOGOUT
+}
+
+model AuthHistory {
+  id        Int       @id @default(autoincrement())
+  memberId  Int       @map("member_id")
+  ip        String    @db.VarChar()
+  country   String    @db.VarChar()
+  action    action
+  detail    String    @db.VarChar()
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime? @updatedAt @map("updated_at")
+  deletedAt DateTime? @map("deleted_at")
+  member    Member    @relation(fields: [memberId], references: [id])
+}
+
+model BanedMember {
+  id        Int       @id @default(autoincrement())
+  memberId  Int       @map("member_id")
+  reason    String    @db.VarChar()
+  limitedAt DateTime  @map("limited_at")
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime? @updatedAt @map("updated_at")
+  deletedAt DateTime? @map("deleted_at")
+  member    Member    @relation(fields: [memberId], references: [id])
+}
+
+model Blog {
+  id          Int       @id @default(autoincrement())
+  memberId    Int       @unique @map("member_id")
+  address     String    @db.VarChar()
+  title       String    @db.VarChar()
+  description String    @db.VarChar()
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime? @updatedAt @map("updated_at")
+  deletedAt   DateTime? @map("deleted_at")
+  member      Member    @relation(fields: [memberId], references: [id])
+  Tag         Tag[]
+}
+
+model Tag {
+  id        Int        @id @default(autoincrement())
+  blogId    Int        @map("blog_id")
+  name      String     @db.VarChar()
+  createdAt DateTime   @default(now()) @map("created_at")
+  updatedAt DateTime?  @updatedAt @map("updated_at")
+  deletedAt DateTime?  @map("deleted_at")
+  blog      Blog       @relation(fields: [blogId], references: [id])
+  Document  Document[]
+}
+
+model Document {
+  id            Int       @id @default(autoincrement())
+  tagId         Int       @map("tag_id")
+  title         String    @db.VarChar()
+  content       String
+  allowComments Boolean   @map("allow_comments")
+  allowPublic   Boolean   @map("allow_public")
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime? @updatedAt @map("updated_at")
+  deletedAt     DateTime? @map("deleted_at")
+  tag           Tag[]
+  Comment       Comment[]
+}
+
+model Comment {
+  id          Int       @id @default(autoincrement())
+  documentId  Int       @map("document_id")
+  memberId    Int       @map("member_id")
+  content     String    @db.VarChar()
+  allowPublic Boolean   @map("allow_public")
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime? @updatedAt @map("updated_at")
+  deletedAt   DateTime? @map("deleted_at")
+  member      Member    @relation(fields: [memberId], references: [id])
+  document    Document  @relation(fields: [documentId], references: [id])
+}
