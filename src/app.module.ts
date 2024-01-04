@@ -11,13 +11,8 @@ import { redisStore } from 'cache-manager-redis-yet';
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
-    CacheModule.registerAsync({
-      imports: [ConfigModule],
-      inject: [ConfigService],
-      useFactory: (configService: ConfigService) => {
-        return { isGlobal: true, store: redisStore, url: configService.get<string>('REDIS_URL'), password: configService.get<string>('REDIS_PASSWORD') };
-      },
-    }),
+    // CacheModule.register({ isGlobal: true }),
+
     MemberModule,
     JwtModule,
     BcryptModule,
