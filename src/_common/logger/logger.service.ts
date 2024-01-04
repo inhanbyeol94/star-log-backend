@@ -3,9 +3,9 @@ import * as winston from 'winston';
 import { SharedService } from '../shared/shared.service';
 import * as chalk from 'chalk';
 
-const logFormat = winston.format.printf(({ level, message }) => {
-  const date = SharedService.getDate();
+const date = SharedService.getDate();
 
+const logFormat = winston.format.printf(({ level, message }) => {
   let emoji = '';
   let colorMessage = message;
 
@@ -33,14 +33,26 @@ const logFormat = winston.format.printf(({ level, message }) => {
 export class LoggerService extends Logger {
   private static winstonLogger: winston.Logger;
   private static instance: LoggerService;
+  private static sharedService: SharedService;
+  private sharedService: SharedService;
 
   constructor() {
     super();
 
+    const logDir = 'logs';
+
     if (!LoggerService.winstonLogger) {
       LoggerService.winstonLogger = winston.createLogger({
         format: winston.format.combine(winston.format.timestamp(), logFormat),
-        transports: [new winston.transports.Console()],
+        transports: [
+          new winston.transports.Console(),
+          new winston.transports.File({
+            dirname: logDir,
+            filename: `${date}.log`,
+            level: 'info',
+            maxFiles: 30,
+          }),
+        ],
       });
     }
   }
