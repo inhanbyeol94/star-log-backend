@@ -39,19 +39,20 @@ export class LoggerService extends Logger {
   constructor() {
     super();
 
-    const logDir = 'logs';
+    // const logDir = 'logs';
 
     if (!LoggerService.winstonLogger) {
       LoggerService.winstonLogger = winston.createLogger({
         format: winston.format.combine(winston.format.timestamp(), logFormat),
         transports: [
           new winston.transports.Console(),
-          new winston.transports.File({
-            dirname: logDir,
-            filename: `${date}.log`,
-            level: 'info',
-            maxFiles: 30,
-          }),
+          // TODO :: logger 저장 로직
+          // new winston.transports.File({
+          //   dirname: logDir,
+          //   filename: `${date}.log`,
+          //   level: 'info',
+          //   maxFiles: 30,
+          // }),
         ],
       });
     }
@@ -64,9 +65,9 @@ export class LoggerService extends Logger {
     return LoggerService.instance;
   }
 
-  log(message: string) {
-    super.log(message);
-    LoggerService.winstonLogger.info(message);
+  log(message: string, logData?: object | string) {
+    super.log(message, logData ? logData : null);
+    LoggerService.winstonLogger.info(message, logData ? logData : null);
   }
 
   error(message: string, trace: string) {
