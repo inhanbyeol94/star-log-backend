@@ -14,7 +14,7 @@ export class GlobalExceptionFilter implements ExceptionFilter {
     const status = exception instanceof HttpException ? exception.getStatus() : HttpStatus.INTERNAL_SERVER_ERROR;
     const message = exception instanceof HttpException ? exception.message : '서버 내부 오류로 처리할 수 없습니다.';
 
-    logger.error(exception, 'GlobalExceptionFilter');
+    logger.error(`error: ${exception.message}, stack: ${exception.stack}`, 'GlobalExceptionFilter');
 
     response.status(status).json({
       status: false,
