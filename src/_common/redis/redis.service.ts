@@ -15,11 +15,11 @@ export class RedisService {
   constructor(@Inject(CACHE_MANAGER) private cacheManager: Cache) {}
 
   /**
-   * 토큰 추가
-   * @param userId 사용자 ID
-   * @param accessToken 액세스 토큰
+   * **토큰 추가**
+   * @param {number} userId 사용자 ID
+   * @param {string} accessToken 액세스 토큰
    */
-  async addAccessToken(userId: string, accessToken: string): Promise<void> {
+  async addUserAccessToken(userId: string, accessToken: string): Promise<void> {
     const currentTokens: AccessToken[] = (await this.cacheManager.get<AccessToken[]>(ACCESS_TOKENS_KEY)) || [];
 
     // 중복 유저 삭제
@@ -36,21 +36,16 @@ export class RedisService {
   }
 
   /**
-   * 유저 액세스 토큰 삭제
-   * @param userId 사용자 ID
-   * @return Promise<void>
+   * **모든 액세스 토큰 조회**
+   * @return 모든 액세스 토큰 배열
    */
-  async deleteUserAccessToken(userId: string): Promise<void> {
-    const currentTokens: AccessToken[] = (await this.cacheManager.get<AccessToken[]>(ACCESS_TOKENS_KEY)) || [];
-
-    const updatedTokens = currentTokens.filter((token) => token.userId !== userId);
-
-    await this.cacheManager.set(ACCESS_TOKENS_KEY, updatedTokens, TOKEN_EXPIRY_SECONDS);
+  async getAllUserAccessTokens(): Promise<AccessToken[]> {
+    return (await this.cacheManager.get<AccessToken[]>(ACCESS_TOKENS_KEY)) || [];
   }
 
   /**
-   * 유저 액세스 토큰 조회
-   * @param userId 사용자 ID
+   * **유저 액세스 토큰 조회**
+   * @param {number} userId 사용자 ID
    * @return 유저 액세스 토큰
    */
   async getUserAccessToken(userId: string): Promise<string | null> {
@@ -61,10 +56,15 @@ export class RedisService {
   }
 
   /**
-   * 모든 액세스 토큰 조회
-   * @return 모든 액세스 토큰 배열
+   * **유저 액세스 토큰 삭제**
+   * @param {number} userId 사용자 ID
+   * @return Promise<void>
    */
-  async getAllAccessTokens(): Promise<AccessToken[]> {
-    return (await this.cacheManager.get<AccessToken[]>(ACCESS_TOKENS_KEY)) || [];
+  async deleteUserAccessToken(userId: string): Promise<void> {
+    const currentTokens: AccessToken[] = (await this.cacheManager.get<AccessToken[]>(ACCESS_TOKENS_KEY)) || [];
+
+    const updatedTokens = currentTokens.filter((token) => token.userId !== userId);
+
+    await this.cacheManager.set(ACCESS_TOKENS_KEY, updatedTokens, TOKEN_EXPIRY_SECONDS);
   }
 }
