@@ -1,7 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
-import { AccessToken } from './redis.interface';
+import { IAccessToken } from './redis.interface';
 
 const ACCESS_TOKENS_KEY = 'accessTokens';
 const TOKEN_EXPIRY_SECONDS = 18000; // 5시간
@@ -18,7 +18,7 @@ export class RedisService {
    * @param {string} accessToken 액세스 토큰
    */
   async addUserAccessToken(memberId: string, accessToken: string): Promise<void> {
-    const currentTokens: AccessToken[] = (await this.cacheManager.get<AccessToken[]>(ACCESS_TOKENS_KEY)) || [];
+    const currentTokens: IAccessToken[] = (await this.cacheManager.get<IAccessToken[]>(ACCESS_TOKENS_KEY)) || [];
 
     // 중복 유저 삭제
     const existingTokenIndex = currentTokens.findIndex((token) => token.memberId === memberId);
@@ -37,8 +37,8 @@ export class RedisService {
    * **모든 액세스 토큰 조회**
    * @return 모든 액세스 토큰 배열
    */
-  async getAllUserAccessTokens(): Promise<AccessToken[]> {
-    return (await this.cacheManager.get<AccessToken[]>(ACCESS_TOKENS_KEY)) || [];
+  async getAllUserAccessTokens(): Promise<IAccessToken[]> {
+    return (await this.cacheManager.get<IAccessToken[]>(ACCESS_TOKENS_KEY)) || [];
   }
 
   /**
@@ -47,7 +47,7 @@ export class RedisService {
    * @return 유저 액세스 토큰
    */
   async getUserAccessToken(memberId: string): Promise<string | null> {
-    const allTokens = (await this.cacheManager.get<AccessToken[]>(ACCESS_TOKENS_KEY)) || [];
+    const allTokens = (await this.cacheManager.get<IAccessToken[]>(ACCESS_TOKENS_KEY)) || [];
     const userToken = allTokens.find((token) => token.memberId === memberId);
 
     return userToken ? userToken.accessToken : null;
@@ -59,7 +59,7 @@ export class RedisService {
    * @return Promise<void>
    */
   async deleteUserAccessToken(memberId: string): Promise<void> {
-    const currentTokens: AccessToken[] = (await this.cacheManager.get<AccessToken[]>(ACCESS_TOKENS_KEY)) || [];
+    const currentTokens: IAccessToken[] = (await this.cacheManager.get<IAccessToken[]>(ACCESS_TOKENS_KEY)) || [];
 
     const updatedTokens = currentTokens.filter((token) => token.memberId !== memberId);
 

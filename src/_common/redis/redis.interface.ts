@@ -1,4 +1,4 @@
-export interface AccessToken {
+export interface IAccessToken {
   memberId: string;
   accessToken: string;
 }
