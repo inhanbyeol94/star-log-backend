@@ -18,7 +18,7 @@ enum platform {
 }
 
 model Member {
-  id            Int           @id @default(autoincrement())
+  id            String        @id @default(uuid())
   socialId      Int           @map("social_id")
   email         String?       @db.VarChar()
   nickname      String?       @db.VarChar()
@@ -46,7 +46,7 @@ enum action {
 
 model AuthHistory {
   id        Int       @id @default(autoincrement())
-  memberId  Int       @map("member_id")
+  memberId  String    @map("member_id")
   ip        String    @db.VarChar()
   country   String    @db.VarChar()
   action    action
@@ -59,7 +59,7 @@ model AuthHistory {
 
 model BanedMember {
   id        Int       @id @default(autoincrement())
-  memberId  Int       @map("member_id")
+  memberId  String    @map("member_id")
   reason    String    @db.VarChar()
   limitedAt DateTime  @map("limited_at")
   createdAt DateTime  @default(now()) @map("created_at")
@@ -70,7 +70,7 @@ model BanedMember {
 
 model Blog {
   id          Int       @id @default(autoincrement())
-  memberId    Int       @unique @map("member_id")
+  memberId    String    @unique @map("member_id")
   address     String    @db.VarChar()
   title       String    @db.VarChar()
   description String    @db.VarChar()
@@ -108,7 +108,7 @@ model Document {
 model Comment {
   id          Int       @id @default(autoincrement())
   documentId  Int       @map("document_id")
-  memberId    Int       @map("member_id")
+  memberId    String    @map("member_id")
   content     String    @db.VarChar()
   allowPublic Boolean   @map("allow_public")
   createdAt   DateTime  @default(now()) @map("created_at")
