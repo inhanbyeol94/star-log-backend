@@ -36,7 +36,7 @@ export class MemberService implements OnModuleInit {
    * @param {date} limitedAt limitedAt
    * @return boolean
    */
-  async setBanedMember(memberId: number, reason: string, limitedAt: Date): Promise<boolean> {
+  async setBanedMember(memberId: string, reason: string, limitedAt: Date): Promise<boolean> {
     await prisma.banedMember.create({
       data: {
         memberId: memberId,
@@ -54,7 +54,7 @@ export class MemberService implements OnModuleInit {
    * @param {number} memberId 사용자 ID
    * @return boolean
    */
-  async deleteBanedMember(memberId: number): Promise<boolean> {
+  async deleteBanedMember(memberId: string): Promise<boolean> {
     const member = await this.getMemberById(memberId);
     await prisma.banedMember.delete({
       where: {
@@ -71,7 +71,7 @@ export class MemberService implements OnModuleInit {
    * @param {number} memberId 사용자 ID
    * @return Member
    */
-  getMemberById(memberId: number) {
+  getMemberById(memberId: string) {
     return prisma.banedMember.findFirst({
       where: {
         memberId: memberId,
