@@ -7,6 +7,7 @@ import { PrismaModule } from './_common/prisma/prisma.module';
 import { RedisModule } from './_common/redis/redis.module';
 import { CacheModule } from '@nestjs/cache-manager';
 import { redisStore } from 'cache-manager-redis-yet';
+import { LoggerModule } from './_common/logger/logger.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { redisStore } from 'cache-manager-redis-yet';
     BcryptModule,
     PrismaModule,
     RedisModule,
+    LoggerModule,
   ],
   controllers: [],
   providers: [],

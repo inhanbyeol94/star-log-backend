@@ -33,8 +33,6 @@ const logFormat = winston.format.printf(({ level, message }) => {
 export class LoggerService extends Logger {
   private static winstonLogger: winston.Logger;
   private static instance: LoggerService;
-  private static sharedService: SharedService;
-  private sharedService: SharedService;
 
   constructor() {
     super();
