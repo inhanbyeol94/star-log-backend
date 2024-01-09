@@ -3,10 +3,8 @@ import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
 import { IAccessToken } from './redis.interface';
 
-const ACCESS_TOKENS_KEY = 'accessTokens';
-const TOKEN_EXPIRY_SECONDS = 18000; // 5시간
-
-const BANED_MEMBERS_KEY = 'banedMembers';
+const TOKEN_EXPIRY_SECONDS: number = 18000; // 5시간
+const BANED_MEMBERS_KEY: string = 'banedMembers';
 
 @Injectable()
 export class RedisService {
@@ -14,58 +12,29 @@ export class RedisService {
 
   /**
    * **토큰 추가**
-   * @param {number} memberId 사용자 ID
+   * @param {string} memberId 사용자 ID
    * @param {string} accessToken 액세스 토큰
    */
   async addUserAccessToken(memberId: string, accessToken: string): Promise<void> {
-    const currentTokens: IAccessToken[] = (await this.cacheManager.get<IAccessToken[]>(ACCESS_TOKENS_KEY)) || [];
+    const memberKey: string = `AT${memberId}`;
+    const currentUserTokens: string[] = (await this.cacheManager.get<string[]>(memberKey)) || [];
+    currentUserTokens.push(accessToken);
 
-    // 중복 유저 삭제
-    const existingTokenIndex = currentTokens.findIndex((token) => token.memberId === memberId);
-    const isTokenReplaced = existingTokenIndex !== -1;
-
-    if (isTokenReplaced) {
-      currentTokens.splice(existingTokenIndex, 1);
-    }
-
-    // 새 토큰 추가
-    currentTokens.push({ memberId, accessToken });
-    await this.cacheManager.set(ACCESS_TOKENS_KEY, currentTokens, TOKEN_EXPIRY_SECONDS);
-  }
-
-  /**
-   * **모든 액세스 토큰 조회**
-   * @return 모든 액세스 토큰 배열
-   */
-  async getAllUserAccessTokens(): Promise<IAccessToken[]> {
-    return (await this.cacheManager.get<IAccessToken[]>(ACCESS_TOKENS_KEY)) || [];
+    await this.cacheManager.set(memberKey, currentUserTokens, TOKEN_EXPIRY_SECONDS);
   }
 
   /**
    * **유저 액세스 토큰 조회**
-   * @param {number} memberId 사용자 ID
-   * @return 유저 액세스 토큰
+   * @param {string} memberId 사용자 ID
+   * @return 사용자의 액세스 토큰 배열
    */
-  async getUserAccessToken(memberId: string): Promise<string | null> {
-    const allTokens = (await this.cacheManager.get<IAccessToken[]>(ACCESS_TOKENS_KEY)) || [];
-    const userToken = allTokens.find((token) => token.memberId === memberId);
-
-    return userToken ? userToken.accessToken : null;
+  async getUserAccessToken(memberId: string): Promise<string[]> {
+    const memberKey: string = `AT${memberId}`;
+    const userTokens: string[] = (await this.cacheManager.get<string[]>(memberKey)) || [];
+    return userTokens;
   }
 
-  /**
-   * **유저 액세스 토큰 삭제**
-   * @param {number} memberId 사용자 ID
-   * @return Promise<void>
-   */
-  async deleteUserAccessToken(memberId: string): Promise<void> {
-    const currentTokens: IAccessToken[] = (await this.cacheManager.get<IAccessToken[]>(ACCESS_TOKENS_KEY)) || [];
-
-    const updatedTokens = currentTokens.filter((token) => token.memberId !== memberId);
-
-    await this.cacheManager.set(ACCESS_TOKENS_KEY, updatedTokens, TOKEN_EXPIRY_SECONDS);
-  }
-
+  // TODO :: 밴 해야함
   /**
    * **벤 전체 멤버 조회**
    * @return string[] 벤 전체 멤버 조회
