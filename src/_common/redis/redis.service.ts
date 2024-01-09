@@ -1,11 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
-
-type AccessToken = {
-  memberId: string;
-  accessToken: string;
-};
+import { AccessToken } from './redis.interface';
 
 const ACCESS_TOKENS_KEY = 'accessTokens';
 const TOKEN_EXPIRY_SECONDS = 18000; // 5시간
