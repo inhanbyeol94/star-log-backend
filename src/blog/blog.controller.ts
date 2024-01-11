@@ -1,7 +1,6 @@
 import { Body, Controller, Delete, Param, Patch, Post, Get } from '@nestjs/common';
 import { BlogService } from './blog.service';
 import { CreateBlogDto, UpdateBlogDto } from './blog.dto';
-import { IMessage } from './blog.interface';
 import { Blog } from '@prisma/client';
 
 /**
@@ -13,13 +12,13 @@ export class BlogController {
 
   /* 블로그 생성 */
   @Post()
-  async create(@Body() data: CreateBlogDto): Promise<IMessage> {
+  async create(@Body() data: CreateBlogDto): Promise<string> {
     return await this.blogService.create(data);
   }
 
   /* 블로그 수정 */
   @Patch(':id')
-  async update(@Param('id') id: number, @Body() data: UpdateBlogDto): Promise<IMessage> {
+  async update(@Param('id') id: number, @Body() data: UpdateBlogDto): Promise<string> {
     return await this.blogService.update(id, data);
   }
 
@@ -43,7 +42,7 @@ export class BlogController {
 
   /* 블로그 삭제 */
   @Delete(':id')
-  async delete(@Param('id') id: number): Promise<IMessage> {
+  async delete(@Param('id') id: number): Promise<string> {
     return await this.blogService.delete(id);
   }
 }

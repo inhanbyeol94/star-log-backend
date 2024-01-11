@@ -1,7 +1,6 @@
 import { BadRequestException, ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { BlogRepository } from './blog.repository';
 import { CreateBlogDto, UpdateBlogDto } from './blog.dto';
-import { IMessage } from './blog.interface';
 import { MemberService } from '../member/member.service';
 import { Blog, Prisma } from '@prisma/client';
 
@@ -18,29 +17,29 @@ export class BlogService {
   /**
    * **블로그 생성**
    * @param {CreateBlogDto} data 블로그 생성에 필요한 객체
-   * @return IMessage
+   * @return {string} 블로그 개설이 완료되었습니다.
    */
-  async create(data: CreateBlogDto): Promise<IMessage> {
+  async create(data: CreateBlogDto): Promise<string> {
     await this.memberService.getMemberById(data.memberId);
     await this.existAddress(data.address);
 
     await this.blogRepository.create(data);
-    return { message: '블로그 개설이 완료되었습니다.' };
+    return '블로그 개설이 완료되었습니다.';
   }
 
   /**
    * **블로그 수정**
    * @param {number} id 블로그 ID
    * @param {UpdateBlogDto} data 블로그 수정에 필요한 객체
-   * @return IMessage
+   * @return {string} 블로그 수정이 성공적으로 완료되었습니다.
    */
-  async update(id: number, data: UpdateBlogDto): Promise<IMessage> {
+  async update(id: number, data: UpdateBlogDto): Promise<string> {
     await this.memberService.getMemberById(id);
     await this.existAddress(data.address);
 
     const updateInfo = await this.blogRepository.update(id, data);
     if (!updateInfo) throw new BadRequestException('블로그수정에 실패하였습니다.');
-    return { message: '블로그 수정이 성공적으로 완료되었습니다.' };
+    return '블로그 수정이 성공적으로 완료되었습니다.';
   }
 
   /**
@@ -72,13 +71,13 @@ export class BlogService {
   /**
    * **블로그 삭제**
    * @param {number} id 블로그 ID
-   * @return IMessage
+   * @return {string} 선택하신 블로그를 삭제하였습니다.
    */
-  async delete(id: number): Promise<IMessage> {
+  async delete(id: number): Promise<string> {
     await this.memberService.getMemberById(id);
     await this.isValidById(id);
     await this.blogRepository.delete(id);
-    return { message: '선택하신 블로그를 삭제하였습니다.' };
+    return '선택하신 블로그를 삭제하였습니다.';
   }
 
   /**
