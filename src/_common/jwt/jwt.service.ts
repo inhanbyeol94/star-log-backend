@@ -2,6 +2,7 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { sign, verify } from 'jsonwebtoken';
 import { IPayload } from './jwt.interface';
 import { ConfigService } from '@nestjs/config';
+import { Member } from '@prisma/client';
 
 @Injectable()
 export class JwtService {
@@ -9,15 +10,11 @@ export class JwtService {
 
   /**
    * **액세스 토큰 발급**
-   * @param payload
-   * @param {number} payload.id 유저 아이디
-   * @param {string} payload.nickname 닉네임
-   * @param {string} payload.profileImage 프로필 사진 url
-   * @param {boolean} payload.isAdmin 관리자 여부
+   * @param member schema
    * @return {string} 액세스 토큰 반환
    * */
-  sign(payload: IPayload): string {
-    return sign(payload, this.configService.get<string>('ACCESS_TOKEN_SECRET_KEY'), { expiresIn: this.configService.get<string>('ACCESS_TOKEN_EXPIRES_IN') });
+  sign(member: Member): string {
+    return sign(this.payload(member), this.configService.get<string>('ACCESS_TOKEN_SECRET_KEY'), { expiresIn: this.configService.get<string>('ACCESS_TOKEN_EXPIRES_IN') });
   }
 
   /**
@@ -32,5 +29,15 @@ export class JwtService {
     } catch (error) {
       throw new UnauthorizedException('로그인이 필요합니다.');
     }
+  }
+
+  /**
+   * **Payload 반환**
+   * @param member schema
+   * @return IPayload payload
+   * */
+  payload(member: Member): IPayload {
+    const { id, email, nickname, isAdmin, profileImage } = member;
+    return { id, email, nickname, isAdmin, profileImage };
   }
 }
