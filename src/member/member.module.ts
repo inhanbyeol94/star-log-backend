@@ -8,5 +8,6 @@ import { JwtModule } from '../_common/jwt/jwt.module';
   imports: [JwtModule, RedisModule],
   providers: [MemberService],
   controllers: [MemberController],
+  exports: [MemberService],
 })
 export class MemberModule {}
