@@ -37,14 +37,16 @@ export class MemberService implements OnModuleInit {
    * @return boolean
    */
   async setBanedMember(memberId: number, reason: string, limitedAt: Date): Promise<boolean> {
-    await prisma.banedMember.create({
-      data: {
-        memberId: memberId,
-        reason: reason,
-        limitedAt: limitedAt,
-      },
-    });
-    await this.redisService.setBanedMember(memberId.toString());
+    await Promise.all([
+      prisma.banedMember.create({
+        data: {
+          memberId: memberId,
+          reason: reason,
+          limitedAt: limitedAt,
+        },
+      }),
+      this.redisService.setBanedMember(memberId.toString()),
+    ]);
 
     return true;
   }
