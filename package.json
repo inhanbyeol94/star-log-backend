@@ -36,6 +36,7 @@
     "cross-env": "^7.0.3",
     "dayjs": "^1.11.10",
     "jsonwebtoken": "^9.0.2",
+    "luxon": "^3.4.4",
     "prisma": "^5.7.1",
     "prisma-class-generator": "^0.2.9",
     "reflect-metadata": "^0.1.13",
