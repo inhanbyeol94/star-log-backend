@@ -19,15 +19,15 @@ enum platform {
 
 model Member {
   id            String        @id @default(uuid())
-  socialId      Int           @map("social_id")
+  socialId      String        @map("social_id")
   email         String?       @db.VarChar()
   nickname      String?       @db.VarChar()
   phoneNumber   String?       @map("phone_number") @db.VarChar()
   profileImage  String?       @map("profile_image") @db.VarChar()
   platform      platform
-  blackList     Boolean       @map("black_list")
-  globalAccess  Boolean       @map("global_access")
-  isAdmin       Boolean       @map("is_admin")
+  blackList     Boolean       @default(false) @map("black_list")
+  globalAccess  Boolean       @default(true) @map("global_access")
+  isAdmin       Boolean       @default(false) @map("is_admin")
   createdAt     DateTime      @default(now()) @map("created_at")
   updatedAt     DateTime?     @updatedAt @map("updated_at")
   deletedAt     DateTime?     @map("deleted_at")
