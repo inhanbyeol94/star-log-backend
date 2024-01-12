@@ -1,4 +1,4 @@
-import { ConflictException, ForbiddenException, Injectable } from '@nestjs/common';
+import { ForbiddenException, Injectable } from '@nestjs/common';
 import { ISocial } from './auth.interface';
 import { MemberService } from '../member/member.service';
 import { JwtService } from '../_common/jwt/jwt.service';
