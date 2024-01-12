@@ -2,13 +2,17 @@ import { Inject, Injectable } from '@nestjs/common';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
 import { IAccessToken } from './redis.interface';
+import { RedisRepository } from './redis.repository';
 
 const TOKEN_EXPIRY_SECONDS: number = 18000; // 5시간
 const BANED_MEMBERS_KEY: string = 'banedMembers';
 
 @Injectable()
 export class RedisService {
-  constructor(@Inject(CACHE_MANAGER) private cacheManager: Cache) {}
+  constructor(
+    @Inject(CACHE_MANAGER) private cacheManager: Cache,
+    private redisRepository: RedisRepository,
+  ) {}
 
   /**
    * **토큰 추가**
@@ -21,6 +25,21 @@ export class RedisService {
     currentUserTokens.push(accessToken);
 
     await this.cacheManager.set(memberKey, currentUserTokens, TOKEN_EXPIRY_SECONDS);
+  }
+
+  /**
+   * **토큰 단일삭제**
+   * */
+  async deleteMemberAccessToken(memberId: string, accessToken: string): Promise<void> {
+    const accessTokens = (await this.redisRepository.find<string[]>(`AT${memberId}`)).filter((a) => a !== accessToken);
+    await this.redisRepository.upsert(memberId, accessTokens);
+  }
+
+  /**
+   * **토큰 전체삭제**
+   * */
+  async deleteMemberAccessTokens(memberId: string): Promise<void> {
+    await this.redisRepository.delete(memberId);
   }
 
   /**
