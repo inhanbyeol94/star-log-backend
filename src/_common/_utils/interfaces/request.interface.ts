@@ -1,12 +1,8 @@
 import { Request } from 'express';
 import { IPayload } from '../../jwt/jwt.interface';
-import { platform } from '@prisma/client';
+import { ISocial } from '../../../auth/auth.interface';
 
 export interface IRequest extends Request {
-  social: {
-    id: number;
-    profileImage: string;
-    platform: platform;
-  };
+  social: ISocial;
   member: IPayload;
 }
