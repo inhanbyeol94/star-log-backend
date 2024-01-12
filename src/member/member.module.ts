@@ -9,5 +9,6 @@ import { MemberRepository } from './member.repository';
   imports: [JwtModule, RedisModule],
   providers: [MemberService, MemberRepository],
   controllers: [MemberController],
+  exports: [MemberService],
 })
 export class MemberModule {}

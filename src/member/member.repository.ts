@@ -24,6 +24,10 @@ export class MemberRepository {
     return this.memberRepository.findFirst({ where: { id } });
   }
 
+  async findFirstBySocialId(socialId: string): Promise<Member> {
+    return this.memberRepository.findFirst({ where: { socialId } });
+  }
+
   async findFirstByNickname(nickname: string): Promise<Member> {
     return this.memberRepository.findFirst({ where: { nickname } });
   }

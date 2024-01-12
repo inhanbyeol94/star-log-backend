@@ -8,6 +8,7 @@ import { MemberRepository } from './member.repository';
 import { IUpdateUser } from './member.interface';
 import { JwtService } from '../_common/jwt/jwt.service';
 import { IPayload } from '../_common/jwt/jwt.interface';
+import { ISocial } from '../auth/auth.interface';
 
 const prisma = new PrismaClient();
 const BANNED_MEMBERS_KEY = 'bannedMembers';
@@ -15,7 +16,6 @@ const BANNED_MEMBERS_KEY = 'bannedMembers';
 @Injectable()
 export class MemberService implements OnModuleInit {
   constructor(
-    @Inject(CACHE_MANAGER) private cacheManager: Cache,
     private redisService: RedisService,
     private memberRepository: MemberRepository,
     private jwtService: JwtService,
@@ -82,6 +82,15 @@ export class MemberService implements OnModuleInit {
   }
 
   /**
+   * **멤버 소셜 아이디 기준 단일조회**
+   * @param socialId number
+   * @return Member Schema
+   * */
+  async findFirstBySocialId(socialId: string): Promise<Member> {
+    return await this.memberRepository.findFirstBySocialId(socialId);
+  }
+
+  /**
    * **닉네임 중복 검사**
    * @param nickname string
    * @throws {ConflictException}
@@ -93,13 +102,20 @@ export class MemberService implements OnModuleInit {
   }
 
   /**
+   * 멤버 생성
+   * */
+  async create(data: ISocial): Promise<Member> {
+    return await this.memberRepository.create({ socialId: data.id, profileImage: data.profileImage, platform: data.platform });
+  }
+
+  /**
    * **REDIS 에 벤 맴버 초기화 저장**
    */
   async initializeBannedMembers(): Promise<void> {
     const bannedMembersId = await this.redisService.getBannedMembers();
     logger.log('Ban Completed', bannedMembersId);
 
-    await this.cacheManager.set(BANNED_MEMBERS_KEY, bannedMembersId);
+    // await this.cacheManager.set(BANNED_MEMBERS_KEY, bannedMembersId);
   }
 
   /**
