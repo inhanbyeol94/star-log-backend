@@ -1,5 +1,5 @@
 import { Catch, ExceptionFilter, ArgumentsHost, HttpException, HttpStatus, BadRequestException } from '@nestjs/common';
-import { logger } from '../../logger/logger.service';
+import { logger } from '../../../logger/logger.service';
 
 @Catch(HttpException, Error)
 export class GlobalExceptionFilter implements ExceptionFilter {
@@ -16,10 +16,16 @@ export class GlobalExceptionFilter implements ExceptionFilter {
 
     logger.error(`error: ${exception.message}, stack: ${exception.stack}`, 'GlobalExceptionFilter');
 
-    response.status(status).json({
-      status: false,
-      statusCode: status,
-      message: message,
-    });
+    try {
+      response.status(status).json({
+        statusCode: status,
+        message: message,
+      });
+    } catch (error) {
+      response.status(500).json({
+        statusCode: 500,
+        message: '알 수 없는 오류가 발생하였습니다.',
+      });
+    }
   }
 }
