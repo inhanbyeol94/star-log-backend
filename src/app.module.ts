@@ -8,6 +8,7 @@ import { RedisModule } from './_common/redis/redis.module';
 import { CacheModule } from '@nestjs/cache-manager';
 import { redisStore } from 'cache-manager-redis-yet';
 import { LoggerModule } from './_common/logger/logger.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { LoggerModule } from './_common/logger/logger.module';
     PrismaModule,
     RedisModule,
     LoggerModule,
+    AuthModule,
   ],
   controllers: [],
   providers: [],
