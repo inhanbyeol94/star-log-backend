@@ -1,18 +1,23 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, OnModuleInit } from '@nestjs/common';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
-import { IAccessToken } from './redis.interface';
 import { RedisRepository } from './redis.repository';
+import { logger } from '../logger/logger.service';
+import { BANNED_MEMBERS_KEY } from '../../member/member.config';
 
 const TOKEN_EXPIRY_SECONDS: number = 18000; // 5시간
 const BANED_MEMBERS_KEY: string = 'banedMembers';
 
 @Injectable()
-export class RedisService {
+export class RedisService implements OnModuleInit {
   constructor(
     @Inject(CACHE_MANAGER) private cacheManager: Cache,
     private redisRepository: RedisRepository,
   ) {}
+
+  async onModuleInit(): Promise<void> {
+    await this.initializeBannedMembers();
+  }
 
   /**
    * **토큰 추가**
@@ -72,6 +77,16 @@ export class RedisService {
     const bannedMembers = await this.getBannedMembers();
 
     return bannedMembers.includes(memberId);
+  }
+
+  /**
+   * **REDIS 에 벤 맴버 초기화 저장**
+   */
+  async initializeBannedMembers(): Promise<void> {
+    const bannedMembers = await this.getBannedMembers();
+    logger.log('Ban Completed');
+
+    await this.cacheManager.set(BANNED_MEMBERS_KEY, bannedMembers);
   }
 
   /**

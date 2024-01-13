@@ -1,29 +1,20 @@
-import { ConflictException, Inject, Injectable, NotFoundException, OnModuleInit } from '@nestjs/common';
+import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { Member, PrismaClient } from '@prisma/client';
-import { CACHE_MANAGER } from '@nestjs/cache-manager';
-import { Cache } from 'cache-manager';
-import { logger } from '../_common/logger/logger.service';
 import { RedisService } from '../_common/redis/redis.service';
 import { MemberRepository } from './member.repository';
 import { IUpdateUser } from './member.interface';
 import { JwtService } from '../_common/jwt/jwt.service';
-import { IPayload } from '../_common/jwt/jwt.interface';
 import { ISocial } from '../auth/auth.interface';
 
 const prisma = new PrismaClient();
-const BANNED_MEMBERS_KEY = 'bannedMembers';
 
 @Injectable()
-export class MemberService implements OnModuleInit {
+export class MemberService {
   constructor(
     private redisService: RedisService,
     private memberRepository: MemberRepository,
     private jwtService: JwtService,
   ) {}
-
-  async onModuleInit(): Promise<void> {
-    await this.initializeBannedMembers();
-  }
 
   /**
    * **멤버 업데이트 API**
@@ -92,7 +83,8 @@ export class MemberService implements OnModuleInit {
 
   /**
    * **닉네임 중복 검사**
-   * @param nickname string
+   * @param id
+   * @param nickname
    * @throws {ConflictException}
    * @return void
    * */
@@ -106,16 +98,6 @@ export class MemberService implements OnModuleInit {
    * */
   async create(data: ISocial): Promise<Member> {
     return await this.memberRepository.create({ socialId: data.id, profileImage: data.profileImage, platform: data.platform });
-  }
-
-  /**
-   * **REDIS 에 벤 맴버 초기화 저장**
-   */
-  async initializeBannedMembers(): Promise<void> {
-    const bannedMembersId = await this.redisService.getBannedMembers();
-    logger.log('Ban Completed', bannedMembersId);
-
-    // await this.cacheManager.set(BANNED_MEMBERS_KEY, bannedMembersId);
   }
 
   /**
