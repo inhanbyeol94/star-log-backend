@@ -3,7 +3,7 @@ import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
 import { RedisRepository } from './redis.repository';
 import { logger } from '../logger/logger.service';
-import { BANNED_MEMBERS_KEY } from './redis.config';
+import { BANED_MEMBERS_KEY } from './redis.config';
 
 const TOKEN_EXPIRY_SECONDS: number = 18000; // 5시간
 
@@ -23,7 +23,7 @@ export class RedisService implements OnModuleInit {
    * @param {string} memberId 사용자 ID
    * @param {string} accessToken 액세스 토큰
    */
-  async addUserAccessToken(memberId: string, accessToken: string): Promise<void> {
+  async setAccessToken(memberId: string, accessToken: string): Promise<void> {
     const memberKey: string = `AT${memberId}`;
     const currentUserTokens: string[] = (await this.cacheManager.get<string[]>(memberKey)) || [];
     currentUserTokens.push(accessToken);
@@ -34,7 +34,7 @@ export class RedisService implements OnModuleInit {
   /**
    * **토큰 단일삭제**
    * */
-  async deleteMemberAccessToken(memberId: string, accessToken: string): Promise<void> {
+  async deleteAccessToken(memberId: string, accessToken: string): Promise<void> {
     const accessTokens = (await this.redisRepository.find<string[]>(`AT${memberId}`)).filter((a) => a !== accessToken);
     await this.redisRepository.upsert(memberId, accessTokens);
   }
@@ -42,7 +42,7 @@ export class RedisService implements OnModuleInit {
   /**
    * **토큰 전체삭제**
    * */
-  async deleteMemberAccessTokens(memberId: string): Promise<void> {
+  async deleteAccessTokens(memberId: string): Promise<void> {
     await this.redisRepository.delete(memberId);
   }
 
@@ -51,19 +51,18 @@ export class RedisService implements OnModuleInit {
    * @param {string} memberId 사용자 ID
    * @return 사용자의 액세스 토큰 배열
    */
-  async getUserAccessToken(memberId: string): Promise<string[]> {
+  async getAccessToken(memberId: string): Promise<string[]> {
     const memberKey: string = `AT${memberId}`;
     const userTokens: string[] = (await this.cacheManager.get<string[]>(memberKey)) || [];
     return userTokens;
   }
 
-  // TODO :: 밴 해야함
   /**
    * **벤 전체 멤버 조회**
-   * @return string[] 벤 전체 멤버 조회
+   * @return 벤 전체 멤버 조회
    */
   async getBannedMembers(): Promise<string[]> {
-    const bannedMembers = await this.cacheManager.get<string[]>(BANNED_MEMBERS_KEY);
+    const bannedMembers = await this.cacheManager.get<string[]>(BANED_MEMBERS_KEY);
     return bannedMembers || [];
   }
 
@@ -85,7 +84,7 @@ export class RedisService implements OnModuleInit {
     const bannedMembers = await this.getBannedMembers();
     logger.log('Ban Completed');
 
-    await this.cacheManager.set(BANNED_MEMBERS_KEY, bannedMembers);
+    await this.cacheManager.set(BANED_MEMBERS_KEY, bannedMembers);
   }
 
   /**
@@ -97,7 +96,7 @@ export class RedisService implements OnModuleInit {
     const bannedMembers = await this.getBannedMembers();
     if (!bannedMembers.includes(memberId)) {
       bannedMembers.push(memberId);
-      await this.cacheManager.set(BANNED_MEMBERS_KEY, bannedMembers);
+      await this.cacheManager.set(BANED_MEMBERS_KEY, bannedMembers);
     }
   }
 
@@ -110,7 +109,7 @@ export class RedisService implements OnModuleInit {
     let bannedMembers = await this.getBannedMembers();
     if (bannedMembers.includes(memberId)) {
       bannedMembers = bannedMembers.filter((id) => id !== memberId);
-      await this.cacheManager.set(BANNED_MEMBERS_KEY, bannedMembers);
+      await this.cacheManager.set(BANED_MEMBERS_KEY, bannedMembers);
     }
   }
 }

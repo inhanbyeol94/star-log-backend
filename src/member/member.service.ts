@@ -107,16 +107,8 @@ export class MemberService {
    * @param {date} limitedAt limitedAt
    * @return boolean
    */
-  async setBanedMember(memberId: string, reason: string, limitedAt: Date): Promise<boolean> {
-    await prisma.banedMember.create({
-      data: {
-        memberId: memberId,
-        reason: reason,
-        limitedAt: limitedAt,
-      },
-    });
-    await this.redisService.setBanedMember(memberId.toString());
-
+  async setBanned(memberId: string, reason: string, limitedAt: Date): Promise<boolean> {
+    await Promise.all([this.memberRepository.setBanned(memberId, reason, limitedAt), this.redisService.setBanedMember(memberId)]);
     return true;
   }
 
@@ -125,15 +117,9 @@ export class MemberService {
    * @param {number} memberId 사용자 ID
    * @return boolean
    */
-  async deleteBanedMember(memberId: string): Promise<boolean> {
-    const member = await this.getMemberById(memberId);
-    await prisma.banedMember.delete({
-      where: {
-        id: member.id,
-      },
-    });
-    await this.redisService.deleteBanedMember(memberId.toString());
-
+  async deleteBanned(memberId: string): Promise<boolean> {
+    const member = await this.findBannedMemberById(memberId);
+    await Promise.all([this.memberRepository.deleteBanned(member.id), this.redisService.deleteBanedMember(memberId)]);
     return true;
   }
 
@@ -142,11 +128,7 @@ export class MemberService {
    * @param {number} memberId 사용자 ID
    * @return Member
    */
-  getMemberById(memberId: string) {
-    return prisma.banedMember.findFirst({
-      where: {
-        memberId: memberId,
-      },
-    });
+  async findBannedMemberById(memberId: string) {
+    return await this.memberRepository.findFirstBanned(memberId);
   }
 }
