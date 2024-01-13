@@ -3,7 +3,7 @@ import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
 import { RedisRepository } from './redis.repository';
 import { logger } from '../logger/logger.service';
-import { BANED_MEMBERS_KEY } from './redis.config';
+import { BANNED_MEMBERS_KEY } from './redis.config';
 
 const TOKEN_EXPIRY_SECONDS: number = 18000; // 5시간
 
@@ -63,7 +63,7 @@ export class RedisService implements OnModuleInit {
    * @return string[] 벤 전체 멤버 조회
    */
   async getBannedMembers(): Promise<string[]> {
-    const bannedMembers = await this.cacheManager.get<string[]>(BANED_MEMBERS_KEY);
+    const bannedMembers = await this.cacheManager.get<string[]>(BANNED_MEMBERS_KEY);
     return bannedMembers || [];
   }
 
@@ -97,7 +97,7 @@ export class RedisService implements OnModuleInit {
     const bannedMembers = await this.getBannedMembers();
     if (!bannedMembers.includes(memberId)) {
       bannedMembers.push(memberId);
-      await this.cacheManager.set(BANED_MEMBERS_KEY, bannedMembers);
+      await this.cacheManager.set(BANNED_MEMBERS_KEY, bannedMembers);
     }
   }
 
@@ -110,7 +110,7 @@ export class RedisService implements OnModuleInit {
     let bannedMembers = await this.getBannedMembers();
     if (bannedMembers.includes(memberId)) {
       bannedMembers = bannedMembers.filter((id) => id !== memberId);
-      await this.cacheManager.set(BANED_MEMBERS_KEY, bannedMembers);
+      await this.cacheManager.set(BANNED_MEMBERS_KEY, bannedMembers);
     }
   }
 }
