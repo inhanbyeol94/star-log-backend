@@ -3,10 +3,9 @@ import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
 import { RedisRepository } from './redis.repository';
 import { logger } from '../logger/logger.service';
-import { BANNED_MEMBERS_KEY } from '../../member/member.config';
+import { BANED_MEMBERS_KEY } from './redis.config';
 
 const TOKEN_EXPIRY_SECONDS: number = 18000; // 5시간
-const BANED_MEMBERS_KEY: string = 'banedMembers';
 
 @Injectable()
 export class RedisService implements OnModuleInit {
