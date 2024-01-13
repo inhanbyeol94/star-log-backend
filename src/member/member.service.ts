@@ -1,12 +1,10 @@
 import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
-import { Member, PrismaClient } from '@prisma/client';
+import { Member } from '@prisma/client';
 import { RedisService } from '../_common/redis/redis.service';
 import { MemberRepository } from './member.repository';
 import { IUpdateUser } from './member.interface';
 import { JwtService } from '../_common/jwt/jwt.service';
 import { ISocial } from '../auth/auth.interface';
-
-const prisma = new PrismaClient();
 
 @Injectable()
 export class MemberService {
