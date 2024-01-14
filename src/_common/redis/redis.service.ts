@@ -35,7 +35,7 @@ export class RedisService implements OnModuleInit {
    * **토큰 단일삭제**
    * */
   async deleteAccessToken(memberId: string, accessToken: string): Promise<void> {
-    const accessTokens = (await this.redisRepository.find<string[]>(`AT${memberId}`)).filter((a) => a !== accessToken);
+    const accessTokens: string[] = (await this.redisRepository.find<string[]>(`AT${memberId}`)).filter((a) => a !== accessToken);
     await this.redisRepository.upsert(memberId, accessTokens);
   }
 
@@ -62,7 +62,7 @@ export class RedisService implements OnModuleInit {
    * @return 벤 전체 멤버 조회
    */
   async getBannedMembers(): Promise<string[]> {
-    const bannedMembers = await this.cacheManager.get<string[]>(BANED_MEMBERS_KEY);
+    const bannedMembers: string[] = await this.cacheManager.get<string[]>(BANED_MEMBERS_KEY);
     return bannedMembers || [];
   }
 
@@ -72,7 +72,7 @@ export class RedisService implements OnModuleInit {
    * @return boolean
    */
   async isMemberBanned(memberId: string): Promise<boolean> {
-    const bannedMembers = await this.getBannedMembers();
+    const bannedMembers: string[] = await this.getBannedMembers();
 
     return bannedMembers.includes(memberId);
   }
