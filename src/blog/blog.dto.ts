@@ -4,7 +4,7 @@ import { blogRegex } from './blog.regex';
 export class CreateBlogDto {
   @IsNotEmpty()
   @IsNumber()
-  memberId: number;
+  memberId: string;
 
   @IsNotEmpty()
   @IsString()

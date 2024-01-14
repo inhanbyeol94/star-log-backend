@@ -19,8 +19,8 @@ export class BlogService {
    * @param {CreateBlogDto} data 블로그 생성에 필요한 객체
    * @return {string} 블로그 개설이 완료되었습니다.
    */
-  async create(data: CreateBlogDto): Promise<string> {
-    await this.memberService.getMemberById(data.memberId);
+  async create(memberId: string, data: CreateBlogDto): Promise<string> {
+    await this.memberService.findUniqueOrThrow(memberId);
     await this.existAddress(data.address);
 
     await this.blogRepository.create(data);
@@ -34,7 +34,7 @@ export class BlogService {
    * @return {string} 블로그 수정이 성공적으로 완료되었습니다.
    */
   async update(id: number, data: UpdateBlogDto): Promise<string> {
-    await this.memberService.getMemberById(id);
+    // await this.memberService.getMemberById(id);
     await this.existAddress(data.address);
 
     const updateInfo = await this.blogRepository.update(id, data);
@@ -74,7 +74,7 @@ export class BlogService {
    * @return {string} 선택하신 블로그를 삭제하였습니다.
    */
   async delete(id: number): Promise<string> {
-    await this.memberService.getMemberById(id);
+    // await this.memberService.findUniqueOrThrow(id);
     await this.isValidById(id);
     await this.blogRepository.delete(id);
     return '선택하신 블로그를 삭제하였습니다.';
