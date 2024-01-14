@@ -5,6 +5,8 @@ import { JwtService } from '../_common/jwt/jwt.service';
 import { Member } from '@prisma/client';
 import { ConfigService } from '@nestjs/config';
 import axios from 'axios';
+import { RedisService } from '../_common/redis/redis.service';
+import { logger } from '../_common/logger/logger.service';
 
 @Injectable()
 export class AuthService {
@@ -12,6 +14,7 @@ export class AuthService {
     private memberService: MemberService,
     private jwtService: JwtService,
     private configService: ConfigService,
+    private redisService: RedisService,
   ) {}
 
   /**
@@ -31,7 +34,7 @@ export class AuthService {
     if (!member) {
       const createMember = await this.memberService.create(data);
       const accessToken = this.jwtService.sign(createMember);
-      //todo 레디스에 토큰 추가
+      await this.redisService.setAccessToken(createMember.id, accessToken);
       return accessToken;
     }
 
@@ -39,20 +42,21 @@ export class AuthService {
     const country = await this.getReqIpCountry(ip);
     await this.verify(member, country);
     const accessToken = this.jwtService.sign(member);
-    //todo 레디스에 토큰 추가
+    await this.redisService.setAccessToken(member.id, accessToken);
+
     return accessToken;
   }
 
   async verify(member: Member, country: string): Promise<void> {
     //블랙리스트 검증
     if (member.blackList) {
-      //todo 접속실패 로그 필요
+      logger.error('', 'ForbiddenException');
       throw new ForbiddenException('접속이 제한된 계정입니다.');
     }
 
     //해외로그인 차단 검증
     if (!member.globalAccess && country !== 'KR') {
-      //todo 접속실패 로그 필요
+      logger.error('', 'ForbiddenException');
       throw new ForbiddenException('해외 로그인이 차단된 계정입니다.');
     }
   }

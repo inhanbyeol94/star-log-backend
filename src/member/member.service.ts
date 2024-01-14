@@ -1,29 +1,18 @@
-import { ConflictException, Inject, Injectable, NotFoundException, OnModuleInit } from '@nestjs/common';
-import { Member, PrismaClient } from '@prisma/client';
-import { CACHE_MANAGER } from '@nestjs/cache-manager';
-import { Cache } from 'cache-manager';
-import { logger } from '../_common/logger/logger.service';
+import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
+import { Member } from '@prisma/client';
 import { RedisService } from '../_common/redis/redis.service';
 import { MemberRepository } from './member.repository';
 import { IUpdateUser } from './member.interface';
 import { JwtService } from '../_common/jwt/jwt.service';
-import { IPayload } from '../_common/jwt/jwt.interface';
 import { ISocial } from '../auth/auth.interface';
 
-const prisma = new PrismaClient();
-const BANNED_MEMBERS_KEY = 'bannedMembers';
-
 @Injectable()
-export class MemberService implements OnModuleInit {
+export class MemberService {
   constructor(
     private redisService: RedisService,
     private memberRepository: MemberRepository,
     private jwtService: JwtService,
   ) {}
-
-  async onModuleInit(): Promise<void> {
-    await this.initializeBannedMembers();
-  }
 
   /**
    * **멤버 업데이트 API**
@@ -92,7 +81,8 @@ export class MemberService implements OnModuleInit {
 
   /**
    * **닉네임 중복 검사**
-   * @param nickname string
+   * @param id
+   * @param nickname
    * @throws {ConflictException}
    * @return void
    * */
@@ -109,32 +99,14 @@ export class MemberService implements OnModuleInit {
   }
 
   /**
-   * **REDIS 에 벤 맴버 초기화 저장**
-   */
-  async initializeBannedMembers(): Promise<void> {
-    const bannedMembersId = await this.redisService.getBannedMembers();
-    logger.log('Ban Completed', bannedMembersId);
-
-    // await this.cacheManager.set(BANNED_MEMBERS_KEY, bannedMembersId);
-  }
-
-  /**
    * **벤 추가**
    * @param {number} memberId 사용자 ID
    * @param {string} reason 이유
    * @param {date} limitedAt limitedAt
    * @return boolean
    */
-  async setBanedMember(memberId: string, reason: string, limitedAt: Date): Promise<boolean> {
-    await prisma.banedMember.create({
-      data: {
-        memberId: memberId,
-        reason: reason,
-        limitedAt: limitedAt,
-      },
-    });
-    await this.redisService.setBanedMember(memberId.toString());
-
+  async setBanned(memberId: string, reason: string, limitedAt: Date): Promise<boolean> {
+    await Promise.all([this.memberRepository.setBanned(memberId, reason, limitedAt), this.redisService.setBanedMember(memberId)]);
     return true;
   }
 
@@ -143,15 +115,9 @@ export class MemberService implements OnModuleInit {
    * @param {number} memberId 사용자 ID
    * @return boolean
    */
-  async deleteBanedMember(memberId: string): Promise<boolean> {
-    const member = await this.getMemberById(memberId);
-    await prisma.banedMember.delete({
-      where: {
-        id: member.id,
-      },
-    });
-    await this.redisService.deleteBanedMember(memberId.toString());
-
+  async deleteBanned(memberId: string): Promise<boolean> {
+    const member = await this.findBannedMemberById(memberId);
+    await Promise.all([this.memberRepository.deleteBanned(member.id), this.redisService.deleteBanedMember(memberId)]);
     return true;
   }
 
@@ -160,11 +126,7 @@ export class MemberService implements OnModuleInit {
    * @param {number} memberId 사용자 ID
    * @return Member
    */
-  getMemberById(memberId: string) {
-    return prisma.banedMember.findFirst({
-      where: {
-        memberId: memberId,
-      },
-    });
+  async findBannedMemberById(memberId: string) {
+    return await this.memberRepository.findFirstBanned(memberId);
   }
 }
