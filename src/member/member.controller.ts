@@ -9,20 +9,20 @@ export class MemberController {
   constructor(private memberService: MemberService) {}
 
   @Put()
-  //guard 추가예정
+  //todo guard 추가예정
   async update(@Member() member: IPayload, @Body() body: UpdateMemberDto) {
     return await this.memberService.update(member.id, body);
   }
 
   @Delete()
-  //guard 추가예정
-  async delete(@Member() member: IPayload) {
-    return await this.memberService.delete(member.id);
+  //todo guard 추가예정
+  async softDelete(@Member() member: IPayload) {
+    return await this.memberService.softDelete(member.id);
   }
 
   @Get()
-  //guard 추가예정
-  async findFirst(@Member() member: IPayload) {
-    return await this.memberService.findFirstById(member.id);
+  //todo guard 추가예정
+  async findUnique(@Member() member: IPayload) {
+    return await this.memberService.findUnique(member.id);
   }
 }
