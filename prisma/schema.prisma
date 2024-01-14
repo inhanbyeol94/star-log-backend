@@ -18,21 +18,21 @@ enum platform {
 }
 
 model Member {
-  id            String        @id @default(uuid())
-  socialId      String        @map("social_id")
-  email         String?       @db.VarChar()
-  nickname      String?       @db.VarChar()
-  phoneNumber   String?       @map("phone_number") @db.VarChar()
-  profileImage  String?       @map("profile_image") @db.VarChar()
+  id            String         @id @default(uuid())
+  socialId      String         @map("social_id")
+  email         String?        @db.VarChar()
+  nickname      String?        @db.VarChar()
+  phoneNumber   String?        @map("phone_number") @db.VarChar()
+  profileImage  String?        @map("profile_image") @db.VarChar()
   platform      platform
-  blackList     Boolean       @default(false) @map("black_list")
-  globalAccess  Boolean       @default(true) @map("global_access")
-  isAdmin       Boolean       @default(false) @map("is_admin")
-  createdAt     DateTime      @default(now()) @map("created_at")
-  updatedAt     DateTime?     @updatedAt @map("updated_at")
-  deletedAt     DateTime?     @map("deleted_at")
+  blackList     Boolean        @default(false) @map("black_list")
+  globalAccess  Boolean        @default(true) @map("global_access")
+  isAdmin       Boolean        @default(false) @map("is_admin")
+  createdAt     DateTime       @default(now()) @map("created_at")
+  updatedAt     DateTime?      @updatedAt @map("updated_at")
+  deletedAt     DateTime?      @map("deleted_at")
   authHistories AuthHistory[]
-  banedMembers  BanedMember[]
+  bannedMembers BannedMember[]
   blog          Blog?
   comments      Comment[]
 }
@@ -57,7 +57,7 @@ model AuthHistory {
   member    Member    @relation(fields: [memberId], references: [id])
 }
 
-model BanedMember {
+model BannedMember {
   id        Int       @id @default(autoincrement())
   memberId  String    @map("member_id")
   reason    String    @db.VarChar()
