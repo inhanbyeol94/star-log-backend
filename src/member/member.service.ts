@@ -95,7 +95,7 @@ export class MemberService {
    * 멤버 생성
    * */
   async create(data: ISocial): Promise<Member> {
-    return await this.memberRepository.create({ socialId: data.id, profileImage: data.profileImage, platform: data.platform });
+    return await this.memberRepository.create({ socialId: data.id, email: data.email, nickname: data.nickname, profileImage: data.profileImage, platform: data.platform });
   }
 
   /**
