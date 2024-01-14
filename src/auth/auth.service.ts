@@ -17,24 +17,16 @@ export class AuthService {
     private redisService: RedisService,
   ) {}
 
-  /**
-   * **소셜 로그인 (공통)**
-   * @param data
-   * @param data.id 소셜 아이디
-   * @param data.platform 소셜 구분
-   * @param data.profileImage 프로필 사진
-   * @param ip 접속 아이피
-   * @remarks 기존 회원일 경우 토큰반환하나, 미등록 회원일 경우 생성 후 토큰을 반환합니다.
-   * @return 액세스토큰 반환
-   * */
   async oAuthLogin(data: ISocial, ip: string): Promise<string> {
     const member = await this.memberService.findFirstBySocialId(data.id);
+    //todo authHistory (시도) 필요
 
     //회원가입
     if (!member) {
       const createMember = await this.memberService.create(data);
       const accessToken = this.jwtService.sign(createMember);
-      await this.redisService.setAccessToken(createMember.id, accessToken);
+      await this.redisService.createAccessToken(createMember.id, accessToken);
+      //todo authHistory (성공) 필요
       return accessToken;
     }
 
@@ -42,29 +34,31 @@ export class AuthService {
     const country = await this.getReqIpCountry(ip);
     await this.verify(member, country);
     const accessToken = this.jwtService.sign(member);
-    await this.redisService.setAccessToken(member.id, accessToken);
-
+    await this.redisService.createAccessToken(member.id, accessToken);
+    //todo authHistory (성공) 필요
     return accessToken;
+  }
+
+  async logout(memberId: string, accessToken: string): Promise<string> {
+    await this.redisService.deleteAccessToken(memberId, accessToken);
+    //todo authHistory (로그아웃) 필요
+    return '로그아웃이 완료되었습니다.';
   }
 
   async verify(member: Member, country: string): Promise<void> {
     //블랙리스트 검증
     if (member.blackList) {
-      logger.error('', 'ForbiddenException');
+      //todo authHistory (실패) 필요
       throw new ForbiddenException('접속이 제한된 계정입니다.');
     }
 
     //해외로그인 차단 검증
     if (!member.globalAccess && country !== 'KR') {
-      logger.error('', 'ForbiddenException');
+      //todo authHistory (실패) 필요
       throw new ForbiddenException('해외 로그인이 차단된 계정입니다.');
     }
   }
 
-  /**
-   * **WHOIS OPEN API (ip 국가 조회)**
-   * @return 국가코드
-   * */
   async getReqIpCountry(ip: string): Promise<string | null> {
     try {
       const res = await axios.get(`https://apis.data.go.kr/B551505/whois/ipas_country_code?serviceKey=${this.configService.get('GET_REQ_IP_COUNTRY_KEY')}&query=${ip}&answer=json`);

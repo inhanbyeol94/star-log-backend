@@ -7,6 +7,9 @@ import { PrismaModule } from './_common/prisma/prisma.module';
 import { RedisModule } from './_common/redis/redis.module';
 import { LoggerModule } from './_common/logger/logger.module';
 import { AuthModule } from './auth/auth.module';
+import { BanedMemberModule } from './member/baned-member/baned-member.module';
+import { AuthHistoryModule } from './auth/auth-history/auth-history.module';
+import { BlogModule } from './blog/blog.module';
 
 @Module({
   imports: [
@@ -14,12 +17,15 @@ import { AuthModule } from './auth/auth.module';
     // CacheModule.register({ isGlobal: true }),
 
     MemberModule,
+    BlogModule,
     JwtModule,
     BcryptModule,
     PrismaModule,
     RedisModule,
     LoggerModule,
     AuthModule,
+    BanedMemberModule,
+    AuthHistoryModule,
   ],
   controllers: [],
   providers: [],
