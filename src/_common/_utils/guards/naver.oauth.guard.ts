@@ -15,14 +15,11 @@ export class NaverAuthGuard implements CanActivate {
 
   async validateRequest(req: IRequest): Promise<any> {
     const code = req.query.code as string;
-    console.log('code', code);
     if (!code) return false;
 
     try {
       const accessToken = await this.getOauthToken(code);
-      console.log('accessToken', accessToken);
       const profile = await this.getProfile(accessToken);
-      console.log('payload', profile);
 
       if (!profile) return false;
 
