@@ -1,11 +1,8 @@
 import { IsNotEmpty, IsNumber, IsString, Matches, MaxLength, MinLength } from '@inhanbyeol/class-validator';
 import { blogRegex } from './blog.regex';
+import { ICreateBlog, IUpdateBlog } from './blog.interface';
 
-export class CreateBlogDto {
-  @IsNotEmpty()
-  @IsNumber()
-  memberId: string;
-
+export class CreateBlogDto implements ICreateBlog {
   @IsNotEmpty()
   @IsString()
   @MaxLength(255)
@@ -28,7 +25,7 @@ export class CreateBlogDto {
   description: string;
 }
 
-export class UpdateBlogDto {
+export class UpdateBlogDto implements IUpdateBlog {
   @IsNotEmpty()
   @IsString()
   @MaxLength(255)
@@ -49,4 +46,16 @@ export class UpdateBlogDto {
   @MinLength(2)
   @Matches(blogRegex.description)
   description: string;
+}
+
+export class BlogIdDto {
+  @IsNotEmpty()
+  @IsNumber()
+  id: number;
+}
+
+export class BlogAddressDto {
+  @IsNotEmpty()
+  @IsString()
+  address: string;
 }
