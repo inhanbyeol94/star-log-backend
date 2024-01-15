@@ -14,7 +14,7 @@ export class RedisRepository {
     return this.cacheManager.del(key);
   }
 
-  async find<V>(key: string): Promise<V> {
+  async find<V>(key: string): Promise<V | undefined> {
     return this.cacheManager.get(key);
   }
 }

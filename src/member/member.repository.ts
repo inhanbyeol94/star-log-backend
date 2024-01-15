@@ -20,15 +20,15 @@ export class MemberRepository {
     await this.memberRepository.softDelete({ id });
   }
 
-  async findUnique(id: string): Promise<Member> {
+  async findUnique(id: string): Promise<Member | null> {
     return this.memberRepository.findUnique({ where: { id } });
   }
 
-  async findFirstBySocialId(socialId: string): Promise<Member> {
+  async findFirstBySocialId(socialId: string): Promise<Member | null> {
     return this.memberRepository.findFirst({ where: { socialId } });
   }
 
-  async findFirstByNickname(nickname: string): Promise<Member> {
+  async findFirstByNickname(nickname: string): Promise<Member | null> {
     return this.memberRepository.findFirst({ where: { nickname } });
   }
 }

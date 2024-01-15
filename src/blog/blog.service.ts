@@ -29,7 +29,7 @@ export class BlogService {
     await this.memberService.findUniqueOrThrow(memberId);
     await this.findUniqueOrThrow(id);
     // todo 본인 블로그 ID가 맞는지의 대한 검증
-    await this.isExistByAddress(data.address);
+    if (data.address) await this.isExistByAddress(data.address);
     await this.blogRepository.update(id, data);
 
     return '블로그 수정이 성공적으로 완료되었습니다.';
@@ -42,6 +42,7 @@ export class BlogService {
 
   /* 블로그 주소별 조회 */
   async findFirstByAddress(address: string): Promise<Blog> {
+    //todo 없을 경우 throw 처리될 수 있도록 설계 필요
     return await this.blogRepository.findFirstByAddress(address);
   }
 

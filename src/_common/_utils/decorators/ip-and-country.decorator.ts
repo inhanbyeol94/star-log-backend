@@ -6,8 +6,8 @@ export const IpAndCountry = createParamDecorator(async (data: unknown, ctx: Exec
   const request: IRequest = ctx.switchToHttp().getRequest();
   try {
     const res = await axios.get(`https://apis.data.go.kr/B551505/whois/ipas_country_code?serviceKey=${process.env.GET_REQ_IP_COUNTRY_KEY}&query=${request.ip}&answer=json`);
-    return { ip: request.ip, country: res.data?.response?.whois?.countryCode };
+    return { ip: request.ip as string, country: res.data?.response?.whois?.countryCode };
   } catch (error) {
-    return { ip: request.ip, country: 'error' };
+    return { ip: request.ip as string, country: 'error' };
   }
 });

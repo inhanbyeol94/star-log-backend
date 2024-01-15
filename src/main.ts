@@ -21,7 +21,7 @@ async function bootstrap() {
 
   app.useGlobalFilters(new GlobalExceptionFilter());
 
-  await app.listen(configService.get<number>('SERVER_PORT'), '0.0.0.0');
+  await app.listen(configService.get<number>('SERVER_PORT')!, '0.0.0.0');
 }
 
 bootstrap();
