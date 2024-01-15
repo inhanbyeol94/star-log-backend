@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { AuthHistoryRepository } from './auth-history.repository';
 import { Prisma } from '@prisma/client';
 import { IPagination } from '../../_common/_utils/interfaces/request.interface';
-import { ICreateAuthHistory } from './auth-history.interface';
+import { ICreateAuthHistory, IPaginationAuthHistory } from './auth-history.interface';
 
 @Injectable()
 export class AuthHistoryService {
@@ -26,8 +26,9 @@ export class AuthHistoryService {
     }
   }
 
-  async findManyAndCount(memberId: string, data: IPagination) {
-    const options: Prisma.AuthHistoryFindManyArgs = { take: data.take, skip: (data.page - 1) * data.take };
+  async findManyAndCount(memberId: string, data: IPaginationAuthHistory) {
+    //타입별로 결과를 반환하는 필터기능이 추가됐으면해 searchType: number
+    const options: Prisma.AuthHistoryFindManyArgs = { where: { memberId }, take: data.take, skip: (data.page - 1) * data.take };
     return await this.authHistoryRepository.findManyAndCount(options);
   }
 }
