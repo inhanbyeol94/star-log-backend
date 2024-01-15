@@ -11,3 +11,8 @@ export interface IPagination {
   page: number;
   take: number;
 }
+
+export interface IIpAndCountry {
+  ip: string;
+  country: string;
+}
