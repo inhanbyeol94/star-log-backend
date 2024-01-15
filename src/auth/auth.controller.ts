@@ -9,26 +9,28 @@ import { IPayload } from '../_common/jwt/jwt.interface';
 import { AccessToken } from '../_common/_utils/decorators/access-token.decorator';
 import { AuthHistoryPaginationDto } from './auth-history/auth-history.dto';
 import { IAuthHistory } from './auth-history/auth-history.interface';
+import { IpAndCountry } from '../_common/_utils/decorators/ip-and-country.decorator';
+import { IIpAndCountry } from '../_common/_utils/interfaces/request.interface';
 
 @Controller('auth')
 export class AuthController {
   constructor(private authService: AuthService) {}
 
   @Delete()
-  async logout(@Member() member: IPayload, @AccessToken() accessToken: string): Promise<string> {
-    return await this.authService.logout(member.id, accessToken);
+  async logout(@Member() member: IPayload, @AccessToken() accessToken: string, @IpAndCountry() ipAndCountry: IIpAndCountry): Promise<string> {
+    return await this.authService.logout(member.id, accessToken, ipAndCountry);
   }
 
   @Get('naver')
   @UseGuards(NaverAuthGuard)
-  async naver(@Social() social: ISocial, @Ip() ip: string): Promise<string> {
-    return await this.authService.oAuthLogin(social, ip);
+  async naver(@Social() social: ISocial, @IpAndCountry() ipAndCountry: IIpAndCountry): Promise<string> {
+    return await this.authService.oAuthLogin(social, ipAndCountry);
   }
 
   @Get('google')
   @UseGuards(GoogleAuthGuard)
-  async google(@Social() social: ISocial, @Ip() ip: string): Promise<string> {
-    return await this.authService.oAuthLogin(social, ip);
+  async google(@Social() social: ISocial, @IpAndCountry() ipAndCountry: IIpAndCountry): Promise<string> {
+    return await this.authService.oAuthLogin(social, ipAndCountry);
   }
 
   @Get('histories/me')
