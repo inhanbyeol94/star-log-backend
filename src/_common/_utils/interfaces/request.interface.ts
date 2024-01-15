@@ -6,3 +6,8 @@ export interface IRequest extends Request {
   social: ISocial;
   member: IPayload;
 }
+
+export interface IPagination {
+  page: number;
+  take: number;
+}
