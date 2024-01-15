@@ -54,6 +54,8 @@ export class AuthService {
       throw new ForbiddenException('접속이 제한된 계정입니다.');
     }
 
+    //todo 기간 밴 검증 추가필요 (BannedMember)
+
     //해외로그인 차단 검증
     if (!member.globalAccess && country !== 'KR') {
       await this.authHistoryService.create(member.id, { ip, country, action: action.FAIL, detail: '해외 로그인 시도' });
