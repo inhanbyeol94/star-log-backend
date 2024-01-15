@@ -1,4 +1,4 @@
 import { PaginationDto } from '../../_common/_utils/dtos/request.dto';
-import { IPagination } from '../../_common/_utils/interfaces/request.interface';
+import { IPaginationAuthHistory } from './auth-history.interface';
 
-export class AuthHistoryPaginationDto extends PaginationDto implements IPagination {}
+export class AuthHistoryPaginationDto extends PaginationDto implements IPaginationAuthHistory {}

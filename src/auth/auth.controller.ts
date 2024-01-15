@@ -1,4 +1,4 @@
-import { Controller, Delete, Get, Ip, UseGuards } from '@nestjs/common';
+import { Controller, Delete, Get, Ip, Query, UseGuards } from '@nestjs/common';
 import { NaverAuthGuard } from '../_common/_utils/guards/naver.oauth.guard';
 import { Social } from '../_common/_utils/decorators/social.decorator';
 import { ISocial } from './auth.interface';
@@ -7,19 +7,21 @@ import { GoogleAuthGuard } from '../_common/_utils/guards/google.oauth.guard';
 import { Member } from '../_common/_utils/decorators/member.decorator';
 import { IPayload } from '../_common/jwt/jwt.interface';
 import { AccessToken } from '../_common/_utils/decorators/access-token.decorator';
+import { AuthHistoryPaginationDto } from './auth-history/auth-history.dto';
+import { IAuthHistory } from './auth-history/auth-history.interface';
 
 @Controller('auth')
 export class AuthController {
   constructor(private authService: AuthService) {}
 
   @Delete()
-  async logout(@Member() member: IPayload, @AccessToken() accessToken: string) {
+  async logout(@Member() member: IPayload, @AccessToken() accessToken: string): Promise<string> {
     return await this.authService.logout(member.id, accessToken);
   }
 
   @Get('naver')
   @UseGuards(NaverAuthGuard)
-  async naver(@Social() social: ISocial, @Ip() ip: string) {
+  async naver(@Social() social: ISocial, @Ip() ip: string): Promise<string> {
     return await this.authService.oAuthLogin(social, ip);
   }
 
@@ -27,5 +29,10 @@ export class AuthController {
   @UseGuards(GoogleAuthGuard)
   async google(@Social() social: ISocial, @Ip() ip: string): Promise<string> {
     return await this.authService.oAuthLogin(social, ip);
+  }
+
+  @Get('histories/me')
+  async historyFindManyAndCount(@Member() member: IPayload, @Query() query: AuthHistoryPaginationDto): Promise<[IAuthHistory[], number]> {
+    return await this.authService.historyFindManyAndCount(member.id, query);
   }
 }

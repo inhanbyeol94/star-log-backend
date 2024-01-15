@@ -2,15 +2,17 @@ import { ForbiddenException, Injectable } from '@nestjs/common';
 import { ISocial } from './auth.interface';
 import { MemberService } from '../member/member.service';
 import { JwtService } from '../_common/jwt/jwt.service';
-import { Member } from '@prisma/client';
+import { AuthHistory, Member } from '@prisma/client';
 import { ConfigService } from '@nestjs/config';
 import axios from 'axios';
 import { RedisService } from '../_common/redis/redis.service';
-import { logger } from '../_common/logger/logger.service';
+import { AuthHistoryService } from './auth-history/auth-history.service';
+import { IPaginationAuthHistory } from './auth-history/auth-history.interface';
 
 @Injectable()
 export class AuthService {
   constructor(
+    private authHistoryService: AuthHistoryService,
     private memberService: MemberService,
     private jwtService: JwtService,
     private configService: ConfigService,
@@ -57,6 +59,11 @@ export class AuthService {
       //todo authHistory (실패) 필요
       throw new ForbiddenException('해외 로그인이 차단된 계정입니다.');
     }
+  }
+
+  async historyFindManyAndCount(id: string, query: IPaginationAuthHistory): Promise<[AuthHistory[], number]> {
+    await this.memberService.findUniqueOrThrow(id);
+    return await this.authHistoryService.findManyAndCount(id, query);
   }
 
   async getReqIpCountry(ip: string): Promise<string | null> {
