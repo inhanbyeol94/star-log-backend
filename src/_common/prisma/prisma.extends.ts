@@ -7,11 +7,11 @@ export const prismaExtendedClient = (prismaClient: PrismaClient) =>
         async findMany({ model, operation, args, query }) {
           const target = Prisma.dmmf.datamodel.models.find((m) => m.name === model);
 
-          if (target.fields.some((f) => f.name === 'deletedAt')) {
+          if (target?.fields.some((f) => f.name === 'deletedAt')) {
             args.where = { ...args.where, deletedAt: null };
           }
-          //@ts-ignore
-          args.include && (args.include = includeSoftDelete(args.include, model));
+
+          (args as any).include && ((args as any).include = includeSoftDelete((args as any).include, model));
 
           return query(args);
         },
@@ -19,12 +19,11 @@ export const prismaExtendedClient = (prismaClient: PrismaClient) =>
         async findFirst({ model, operation, args, query }) {
           const target = Prisma.dmmf.datamodel.models.find((m) => m.name === model);
 
-          if (target.fields.some((f) => f.name === 'deletedAt')) {
+          if (target?.fields.some((f) => f.name === 'deletedAt')) {
             args.where = { ...args.where, deletedAt: null };
           }
 
-          //@ts-ignore
-          args.include && (args.include = includeSoftDelete(args.include, model));
+          (args as any).include && ((args as any).include = includeSoftDelete((args as any).include, model));
 
           return query(args);
         },
@@ -32,22 +31,22 @@ export const prismaExtendedClient = (prismaClient: PrismaClient) =>
         async findUnique({ model, operation, args, query }) {
           const target = Prisma.dmmf.datamodel.models.find((m) => m.name === model);
 
-          if (target.fields.some((f) => f.name === 'deletedAt')) {
+          if (target?.fields.some((f) => f.name === 'deletedAt')) {
             args.where = { ...args.where, deletedAt: null };
           }
-          //@ts-ignore
-          args.include && (args.include = includeSoftDelete(args.include, model));
+
+          (args as any).include && ((args as any).include = includeSoftDelete((args as any).include, model));
 
           return query(args);
         },
 
         async findFirstOrThrow({ model, operation, args, query }) {
           const target = Prisma.dmmf.datamodel.models.find((m) => m.name === model);
-          if (target.fields.some((f) => f.name === 'deletedAt')) {
+          if (target?.fields.some((f) => f.name === 'deletedAt')) {
             args.where = { ...args.where, deletedAt: null };
           }
-          // @ts-ignore
-          args.include && (args.include = includeSoftDelete(args.include, model));
+
+          (args as any).include && ((args as any).include = includeSoftDelete((args as any).include, model));
 
           return query(args);
         },
@@ -55,11 +54,11 @@ export const prismaExtendedClient = (prismaClient: PrismaClient) =>
         async findUniqueOrThrow({ model, operation, args, query }) {
           const target = Prisma.dmmf.datamodel.models.find((m) => m.name === model);
 
-          if (target.fields.some((f) => f.name === 'deletedAt')) {
+          if (target?.fields.some((f) => f.name === 'deletedAt')) {
             args.where = { ...args.where, deletedAt: null };
           }
-          // @ts-ignore
-          args.include && (args.include = includeSoftDelete(args.include, model));
+
+          (args as any).include && ((args as any).include = includeSoftDelete((args as any).include, model));
 
           return query(args);
         },
@@ -94,25 +93,25 @@ function includeSoftDelete(obj: object, model: Prisma.ModelName) {
 
     if (!obj[key].deletedAt) {
       if (obj[key].where) {
-        const includeModelInfo = target.fields.find((m) => m.name === key);
-        const includeTarget = Prisma.dmmf.datamodel.models.find((m) => m.name === includeModelInfo.type);
-        if (includeTarget.fields.some((f) => f.name === 'deletedAt')) {
+        const includeModelInfo = target?.fields.find((m) => m.name === key);
+        const includeTarget = Prisma.dmmf.datamodel.models.find((m) => m.name === includeModelInfo?.type);
+        if (includeTarget?.fields.some((f) => f.name === 'deletedAt')) {
           obj[key].where = { ...obj[key].where, deletedAt: null };
         }
       }
 
       if (obj[key] === true) {
-        const includeModelInfo = target.fields.find((m) => m.name === key);
-        const includeTarget = Prisma.dmmf.datamodel.models.find((m) => m.name === includeModelInfo.type);
-        if (includeTarget.fields.some((f) => f.name === 'deletedAt')) {
+        const includeModelInfo = target?.fields.find((m) => m.name === key);
+        const includeTarget = Prisma.dmmf.datamodel.models.find((m) => m.name === includeModelInfo?.type);
+        if (includeTarget?.fields.some((f) => f.name === 'deletedAt')) {
           obj[key] = { where: { ...obj[key].where, deletedAt: null } };
         }
       }
 
       if (obj[key].include) {
-        const includeModelInfo = target.fields.find((m) => m.name === key);
-        const includeTarget = Prisma.dmmf.datamodel.models.find((m) => m.name === includeModelInfo.type);
-        if (includeTarget.fields.some((f) => f.name === 'deletedAt')) {
+        const includeModelInfo = target?.fields.find((m) => m.name === key);
+        const includeTarget = Prisma.dmmf.datamodel.models.find((m) => m.name === includeModelInfo?.type);
+        if (includeTarget?.fields.some((f) => f.name === 'deletedAt')) {
           obj[key] = {
             ...obj[key],
             where: { ...obj[key].where, deletedAt: null },
