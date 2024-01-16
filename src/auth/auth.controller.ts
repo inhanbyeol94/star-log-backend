@@ -11,6 +11,7 @@ import { AuthHistoryPaginationDto } from './auth-history/auth-history.dto';
 import { IAuthHistory } from './auth-history/auth-history.interface';
 import { IpAndCountry } from '../_common/_utils/decorators/ip-and-country.decorator';
 import { IIpAndCountry } from '../_common/_utils/interfaces/request.interface';
+import { KakaoAuthGuard } from '../_common/_utils/guards/kakao.oauth.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -30,6 +31,12 @@ export class AuthController {
   @Get('google')
   @UseGuards(GoogleAuthGuard)
   async google(@Social() social: ISocial, @IpAndCountry() ipAndCountry: IIpAndCountry): Promise<string> {
+    return await this.authService.oAuthLogin(social, ipAndCountry);
+  }
+
+  @Get('kakao')
+  @UseGuards(KakaoAuthGuard)
+  async kakao(@Social() social: ISocial, @IpAndCountry() ipAndCountry: IIpAndCountry): Promise<string> {
     return await this.authService.oAuthLogin(social, ipAndCountry);
   }
 
