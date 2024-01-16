@@ -14,7 +14,10 @@ export class JwtService {
    * @return {string} 액세스 토큰 반환
    * */
   sign(member: Member): string {
-    return sign(this.payload(member), this.configService.get<string>('ACCESS_TOKEN_SECRET_KEY'), { expiresIn: this.configService.get<string>('ACCESS_TOKEN_EXPIRES_IN') });
+    const { id, email, nickname, isAdmin, profileImage } = member;
+    return sign({ id, email, nickname, isAdmin, profileImage }, this.configService.get<string>('ACCESS_TOKEN_SECRET_KEY')!, {
+      expiresIn: this.configService.get<string>('ACCESS_TOKEN_EXPIRES_IN')!,
+    });
   }
 
   /**
@@ -23,21 +26,11 @@ export class JwtService {
    * @throws {UnauthorizedException} 토큰오류 반환
    * @return payload 반환
    * */
-  verify(accessToken: string): IPayload {
+  verify(accessToken: string): IPayload | string {
     try {
-      return verify(accessToken, this.configService.get<string>('ACCESS_TOKEN_SECRET_KEY')) as IPayload;
+      return verify(accessToken, this.configService.get<string>('ACCESS_TOKEN_SECRET_KEY')!) as IPayload;
     } catch (error) {
-      throw new UnauthorizedException('로그인이 필요합니다.');
+      return error.message as string;
     }
-  }
-
-  /**
-   * **Payload 반환**
-   * @param member schema
-   * @return IPayload payload
-   * */
-  payload(member: Member): IPayload {
-    const { id, email, nickname, isAdmin, profileImage } = member;
-    return { id, email, nickname, isAdmin, profileImage };
   }
 }
