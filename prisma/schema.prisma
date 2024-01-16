@@ -23,7 +23,7 @@ model Member {
   email         String?        @db.VarChar()
   nickname      String?        @db.VarChar()
   phoneNumber   String?        @map("phone_number") @db.VarChar()
-  profileImage  String?        @map("profile_image") @db.VarChar()
+  profileImage  String         @map("profile_image") @db.VarChar()
   platform      platform
   blackList     Boolean        @default(false) @map("black_list")
   globalAccess  Boolean        @default(true) @map("global_access")
