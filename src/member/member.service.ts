@@ -19,7 +19,7 @@ export class MemberService {
 
   async update(id: string, data: IUpdateUser): Promise<string> {
     await this.findUniqueOrThrow(id);
-    await this.existNickname(id, data.nickname!);
+    if (data.nickname) await this.existNickname(id, data.nickname);
     await Promise.all([this.memberRepository.update(id, data), this.redisService.deleteManyAccessToken(id)]);
     return '정보가 수정되었습니다.\n보안 상 모든 기기에서 로그아웃되며, 재로그인이 필요합니다.';
   }
