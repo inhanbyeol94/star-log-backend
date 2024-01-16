@@ -43,7 +43,7 @@ export class BlogController {
   /* 블로그 주소별 조회 */
   @Get('/address/:address')
   //todo 가드추가 예정
-  async findFirstByAddress(@Param() param: BlogAddressDto): Promise<Blog> {
+  async findFirstByAddress(@Param() param: BlogAddressDto): Promise<Blog | null> {
     return await this.blogService.findFirstByAddress(param.address);
   }
 
