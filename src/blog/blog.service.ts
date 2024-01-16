@@ -1,9 +1,8 @@
-import { BadRequestException, ConflictException, Injectable, NotFoundException } from '@nestjs/common';
+import { ConflictException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { BlogRepository } from './blog.repository';
 import { MemberService } from '../member/member.service';
 import { Blog, Prisma } from '@prisma/client';
 import { ICreateBlog, IUpdateBlog } from './blog.interface';
-import { BlogIdDto } from './blog.dto';
 
 /**
  * Blog 관련 요청을 처리하는 Service Class
@@ -27,9 +26,9 @@ export class BlogService {
   /* 블로그 수정 */
   async update(id: number, memberId: string, data: IUpdateBlog): Promise<string> {
     await this.memberService.findUniqueOrThrow(memberId);
-    await this.findUniqueOrThrow(id);
-    // todo 본인 블로그 ID가 맞는지의 대한 검증
-    await this.isExistByAddress(data.address);
+    const blog = await this.findUniqueOrThrow(id);
+    await this.verifyAccessAuthorityOrThrow(blog.memberId, memberId);
+    if (data.address) await this.isExistByAddress(data.address);
     await this.blogRepository.update(id, data);
 
     return '블로그 수정이 성공적으로 완료되었습니다.';
@@ -41,7 +40,8 @@ export class BlogService {
   }
 
   /* 블로그 주소별 조회 */
-  async findFirstByAddress(address: string): Promise<Blog> {
+  async findFirstByAddress(address: string): Promise<Blog | null> {
+    await this.isValidByAddress(address);
     return await this.blogRepository.findFirstByAddress(address);
   }
 
@@ -53,7 +53,8 @@ export class BlogService {
   /* 블로그 삭제 */
   async softDelete(id: number, memberId: string): Promise<string> {
     await this.memberService.findUniqueOrThrow(memberId);
-    await this.findUniqueOrThrow(id);
+    const blog = await this.findUniqueOrThrow(id);
+    await this.verifyAccessAuthorityOrThrow(blog.memberId, memberId);
     await this.blogRepository.softDelete(id);
     return '선택하신 블로그를 삭제하였습니다.';
   }
@@ -77,11 +78,22 @@ export class BlogService {
     if (blogAddress) throw new ConflictException('이미 사용중인 주소입니다. 다시 한번 확인해주세요.');
   }
 
+  /* 블로그 주소 유효성검증 */
+  async isValidByAddress(address: string): Promise<void> {
+    const blogAddress = await this.blogRepository.findFirstByAddress(address);
+    if (!blogAddress) throw new NotFoundException('존재하지 않는 블로그 주소입니다.');
+  }
+
   /* 블로그 아이디 유효성검증 */
   async findUniqueOrThrow(id: number): Promise<Blog> {
     const blog = await this.blogRepository.findUnique(id);
     if (!blog) throw new NotFoundException('해당하는 블로그가 존재하지 않습니다.');
 
     return blog;
+  }
+
+  /* 블로그 주인 ID와 요청한 ID 검증 */
+  async verifyAccessAuthorityOrThrow(blogMemberId: string, memberId: string): Promise<void> {
+    if (blogMemberId !== memberId) throw new ForbiddenException('블로그에 대한 권한이 없습니다.');
   }
 }
