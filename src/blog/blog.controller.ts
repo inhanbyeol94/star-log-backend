@@ -1,9 +1,10 @@
-import { Body, Controller, Delete, Param, Patch, Post, Get } from '@nestjs/common';
+import { Body, Controller, Delete, Param, Patch, Post, Get, Query } from '@nestjs/common';
 import { BlogService } from './blog.service';
-import { BlogAddressDto, BlogIdDto, CreateBlogDto, UpdateBlogDto } from './blog.dto';
+import { BlogAddressDto, BlogIdDto, CreateBlogDto, PaginationBlogDto, UpdateBlogDto } from './blog.dto';
 import { Blog } from '@prisma/client';
 import { Member } from '../_common/_utils/decorators/member.decorator';
 import { IPayload } from '../_common/jwt/jwt.interface';
+import { PaginationDto } from '../_common/_utils/dtos/request.dto';
 
 /**
  * Blog 관련 요청을 처리하는 Controller Class
@@ -29,8 +30,8 @@ export class BlogController {
   /* 블로그 전체조회 */
   @Get()
   //todo 가드추가 예정
-  async findMany(): Promise<Blog[]> {
-    return await this.blogService.findMany();
+  async findManyAndCount(@Query() query: PaginationBlogDto) {
+    return await this.blogService.findManyAndCount(query);
   }
 
   /* 블로그 ID별 조회 */
