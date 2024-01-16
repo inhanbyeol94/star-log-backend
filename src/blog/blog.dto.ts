@@ -1,6 +1,7 @@
-import { IsNotEmpty, IsNumber, IsString, Matches, MaxLength, MinLength } from '@inhanbyeol/class-validator';
+import { IsIn, IsNotEmpty, IsNumber, IsOptional, IsString, Matches, MaxLength, MinLength } from '@inhanbyeol/class-validator';
 import { blogRegex } from './blog.regex';
-import { ICreateBlog, IUpdateBlog } from './blog.interface';
+import { ICreateBlog, IPaginationBlog, IUpdateBlog } from './blog.interface';
+import { PaginationDto } from '../_common/_utils/dtos/request.dto';
 
 export class CreateBlogDto implements ICreateBlog {
   @IsNotEmpty()
@@ -58,4 +59,22 @@ export class BlogAddressDto {
   @IsNotEmpty()
   @IsString()
   address: string;
+}
+
+export class PaginationBlogDto extends PaginationDto implements IPaginationBlog {
+  @IsOptional()
+  @IsIn(['title', 'tags', 'nickname'])
+  searchBy?: string;
+
+  @IsOptional()
+  @IsString()
+  searchKeyword?: string;
+
+  @IsNotEmpty()
+  @IsIn(['title'])
+  orderBy: string = 'title';
+
+  @IsNotEmpty()
+  @IsIn(['asc', 'desc'])
+  sortOrder: string = 'desc';
 }
