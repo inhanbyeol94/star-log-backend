@@ -13,26 +13,28 @@ export class KakaoAuthGuard implements CanActivate {
     return this.validateRequest(request);
   }
 
-  async validateRequest(req: IRequest): Promise<any> {
+  async validateRequest(req: IRequest): Promise<boolean> {
     const code = req.query.code as string;
+    console.log('code', code);
     if (!code) return false;
 
     try {
       const accessToken = await this.getOauthToken(code);
+      console.log('accessToken', accessToken);
       const profile = await this.getProfile(accessToken);
+      console.log('profile', profile);
 
       if (!profile) return false;
 
       const id = String(profile.id) || null;
-      const profileImage = profile.picture || null;
-      const email = profile.email || null;
-      const nickname = profile.name || null;
-
-      console.log('id,profileImage: ', id, profileImage);
+      console.log('id', id);
+      const profileImage = profile.properties.profile_image || null;
+      console.log('profileImage', profileImage);
 
       if (!id || !profileImage) return false;
 
-      req.social = { id, profileImage, email, nickname, platform: platform.GOOGLE };
+      req.social = { id, profileImage, platform: platform.KAKAO };
+      console.log('req.social', req.social);
 
       return true;
     } catch (error) {
@@ -42,12 +44,12 @@ export class KakaoAuthGuard implements CanActivate {
 
   async getOauthToken(code: string) {
     const { data } = await axios.post(
-      'https://oauth2.googleapis.com/token',
+      'https://kauth.kakao.com/oauth/token',
       {
         grant_type: 'authorization_code',
-        client_id: this.configService.get('GOOGLE_CLIENT_ID'),
-        redirect_uri: this.configService.get('GOOGLE_CALLBACK_URL'),
-        client_secret: this.configService.get('GOOGLE_CLIENT_SECRET'),
+        client_id: this.configService.get('KAKAO_CLIENT_ID'),
+        redirect_uri: this.configService.get('KAKAO_CALLBACK_URL'),
+        client_secret: this.configService.get('KAKAO_CLIENT_SECRET'),
         state: 'starlog',
         code,
       },
@@ -62,7 +64,7 @@ export class KakaoAuthGuard implements CanActivate {
   }
 
   async getProfile(accessToken: string) {
-    const { data } = await axios.get(`https://www.googleapis.com/userinfo/v2/me?access_token=${accessToken}`);
+    const { data } = await axios.get(`https://kapi.kakao.com/v2/user/me?access_token=${accessToken}`);
     return data;
   }
 }
