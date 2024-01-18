@@ -10,6 +10,7 @@ import { AuthModule } from './auth/auth.module';
 import { BanedMemberModule } from './member/baned-member/baned-member.module';
 import { AuthHistoryModule } from './auth/auth-history/auth-history.module';
 import { BlogModule } from './blog/blog.module';
+import { PaginationModule } from './_common/pagination/pagination.module';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { BlogModule } from './blog/blog.module';
     AuthModule,
     BanedMemberModule,
     AuthHistoryModule,
+    PaginationModule,
   ],
   controllers: [],
   providers: [],
