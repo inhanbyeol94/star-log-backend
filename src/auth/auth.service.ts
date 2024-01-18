@@ -7,7 +7,7 @@ import { RedisService } from '../_common/redis/redis.service';
 import { AuthHistoryService } from './auth-history/auth-history.service';
 import { IPaginationAuthHistory } from './auth-history/auth-history.interface';
 import { IIpAndCountry } from '../_common/_utils/interfaces/request.interface';
-//
+
 @Injectable()
 export class AuthService {
   constructor(
