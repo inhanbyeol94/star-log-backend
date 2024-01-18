@@ -73,7 +73,7 @@ export class BlogService {
           options.include = { ...options.include, tags: { where: { name: data.searchKeyword } } };
           break;
         case 'nickname':
-          options.where = { member: { nickname: data.searchKeyword } };
+          options.where = { member: { nickname: { contains: data.searchKeyword } } };
       }
     }
 
