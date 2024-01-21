@@ -5,14 +5,9 @@ import { RedisRepository } from './redis.repository';
 import { logger } from '../logger/logger.service';
 import { BANED_MEMBERS_KEY } from './redis.config';
 
-const TOKEN_EXPIRY_SECONDS: number = 18000; // 5시간
-
 @Injectable()
 export class RedisService implements OnModuleInit {
-  constructor(
-    @Inject(CACHE_MANAGER) private cacheManager: Cache,
-    private redisRepository: RedisRepository,
-  ) {}
+  constructor(private redisRepository: RedisRepository) {}
 
   async onModuleInit(): Promise<void> {
     await this.initializeBannedMembers();
@@ -20,15 +15,16 @@ export class RedisService implements OnModuleInit {
 
   async createAccessToken(memberId: string, accessToken: string): Promise<void> {
     const memberKey: string = `AT${memberId}`;
-    const currentUserTokens: string[] = (await this.cacheManager.get<string[]>(memberKey)) || [];
+    const currentUserTokens: string[] = (await this.redisRepository.find<string[]>(memberKey)) || [];
     currentUserTokens.push(accessToken);
-
-    await this.cacheManager.set(memberKey, currentUserTokens, TOKEN_EXPIRY_SECONDS);
+    //todo 유지은 ENV 15일 ttl 값 설정 필요 (ms)
+    await this.redisRepository.upsert(memberKey, currentUserTokens, 0);
   }
 
   async deleteAccessToken(memberId: string, accessToken: string): Promise<void> {
     const accessTokens: string[] = ((await this.redisRepository.find<string[]>(`AT${memberId}`)) || []).filter((a) => a !== accessToken);
-    await this.redisRepository.upsert(memberId, accessTokens);
+    //todo 유지은 ENV 15일 ttl 값 설정 필요 (ms)
+    await this.redisRepository.upsert(memberId, accessTokens, 0);
   }
 
   async deleteManyAccessToken(memberId: string): Promise<void> {
@@ -37,12 +33,12 @@ export class RedisService implements OnModuleInit {
 
   async findFirstByAccessToken(memberId: string): Promise<string[]> {
     const memberKey: string = `AT${memberId}`;
-    const userTokens: string[] = (await this.cacheManager.get<string[]>(memberKey)) || [];
+    const userTokens: string[] = (await this.redisRepository.find<string[]>(memberKey)) || [];
     return userTokens;
   }
 
   async findManyBannedMember(): Promise<string[]> {
-    const bannedMembers = await this.cacheManager.get<string[]>(BANED_MEMBERS_KEY);
+    const bannedMembers = await this.redisRepository.find<string[]>(BANED_MEMBERS_KEY);
     return bannedMembers || [];
   }
 
@@ -56,14 +52,14 @@ export class RedisService implements OnModuleInit {
     const bannedMembers = await this.findManyBannedMember();
     logger.log('Ban Completed');
 
-    await this.cacheManager.set(BANED_MEMBERS_KEY, bannedMembers);
+    await this.redisRepository.upsert(BANED_MEMBERS_KEY, bannedMembers, 0);
   }
 
   async createBannedMember(memberId: string): Promise<void> {
     const bannedMembers = await this.findManyBannedMember();
     if (!bannedMembers.includes(memberId)) {
       bannedMembers.push(memberId);
-      await this.cacheManager.set(BANED_MEMBERS_KEY, bannedMembers);
+      await this.redisRepository.upsert(BANED_MEMBERS_KEY, bannedMembers, 0);
     }
   }
 
@@ -71,7 +67,7 @@ export class RedisService implements OnModuleInit {
     let bannedMembers = await this.findManyBannedMember();
     if (bannedMembers.includes(memberId)) {
       bannedMembers = bannedMembers.filter((id) => id !== memberId);
-      await this.cacheManager.set(BANED_MEMBERS_KEY, bannedMembers);
+      await this.redisRepository.upsert(BANED_MEMBERS_KEY, bannedMembers, 0);
     }
   }
 }

@@ -6,8 +6,8 @@ import { Cache } from 'cache-manager';
 export class RedisRepository {
   constructor(@Inject(CACHE_MANAGER) private cacheManager: Cache) {}
 
-  async upsert(key: string, value: any) {
-    return this.cacheManager.set(key, value, 0);
+  async upsert(key: string, value: any, ttl: number) {
+    return this.cacheManager.set(key, value, ttl);
   }
 
   async delete(key: string) {
