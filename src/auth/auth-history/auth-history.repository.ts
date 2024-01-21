@@ -1,10 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../_common/prisma/prisma.service';
 import { Prisma } from '@prisma/client';
+import { IPaginationAuthHistory } from './auth-history.interface';
+import { PaginationService } from '../../_common/pagination/pagination.service';
 
 @Injectable()
 export class AuthHistoryRepository {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private paginationService: PaginationService,
+  ) {}
 
   private authHistoryRepository = this.prisma.extendedClient.authHistory;
 
@@ -16,7 +21,10 @@ export class AuthHistoryRepository {
     return this.authHistoryRepository.createMany({ data });
   }
 
-  async findManyAndCount(options: Prisma.AuthHistoryFindManyArgs) {
-    return this.prisma.$transaction([this.authHistoryRepository.findMany(options), this.authHistoryRepository.count({ where: options.where })]);
+  async findManyAndCount(memberId: string, data: IPaginationAuthHistory) {
+    //select은 options 변수가 아닌 메소드에 직접 설정하세요.
+    const options: Prisma.AuthHistoryFindManyArgs = { where: { ...(memberId && {}) }, take: data.take, skip: (data.page - 1) * data.take };
+    const [result, allCount] = await this.prisma.$transaction([this.authHistoryRepository.findMany(options), this.authHistoryRepository.count({ where: options.where })]);
+    return [result, this.paginationService.metaData(allCount, data)];
   }
 }
