@@ -29,21 +29,18 @@ export class BlogController {
 
   /* 블로그 전체조회 */
   @Get()
-  @UseGuards(UserAuthGuard)
   async findManyAndCount(@Query() query: PaginationBlogDto) {
     return await this.blogService.findManyAndCount(query);
   }
 
   /* 블로그 ID별 조회 */
   @Get(':id')
-  @UseGuards(UserAuthGuard)
   async findFirstById(@Param() param: BlogIdDto): Promise<Blog> {
     return await this.blogService.findUnique(param.id);
   }
 
   /* 블로그 주소별 조회 */
   @Get('/address/:address')
-  @UseGuards(UserAuthGuard)
   async findFirstByAddress(@Param() param: BlogAddressDto): Promise<Blog | null> {
     return await this.blogService.findFirstByAddress(param.address);
   }
