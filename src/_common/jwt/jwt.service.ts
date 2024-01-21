@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { sign, verify } from 'jsonwebtoken';
 import { IPayload } from './jwt.interface';
 import { ConfigService } from '@nestjs/config';
@@ -8,11 +8,6 @@ import { Member } from '@prisma/client';
 export class JwtService {
   constructor(private configService: ConfigService) {}
 
-  /**
-   * **액세스 토큰 발급**
-   * @param member schema
-   * @return {string} 액세스 토큰 반환
-   * */
   sign(member: Member): string {
     const { id, email, nickname, isAdmin, profileImage } = member;
     return sign({ id, email, nickname, isAdmin, profileImage }, this.configService.get<string>('ACCESS_TOKEN_SECRET_KEY')!, {
@@ -20,12 +15,6 @@ export class JwtService {
     });
   }
 
-  /**
-   * **액세스 토큰 검증**
-   * @param {string} accessToken 액세스 토큰
-   * @throws {UnauthorizedException} 토큰오류 반환
-   * @return payload 반환
-   * */
   verify(accessToken: string): IPayload | string {
     try {
       return verify(accessToken, this.configService.get<string>('ACCESS_TOKEN_SECRET_KEY')!) as IPayload;
