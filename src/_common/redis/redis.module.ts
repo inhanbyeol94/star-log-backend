@@ -12,7 +12,7 @@ import { RedisRepository } from './redis.repository';
       imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => {
-        return { isGlobal: true, store: redisStore, url: configService.get<string>('REDIS_URL'), password: configService.get<string>('REDIS_PASSWORD') };
+        return { isGlobal: true, store: redisStore, ttl: 0, url: configService.get<string>('REDIS_URL'), password: configService.get<string>('REDIS_PASSWORD') };
       },
     }),
   ],

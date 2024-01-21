@@ -2,7 +2,9 @@ import { ConflictException, ForbiddenException, Injectable, NotFoundException } 
 import { BlogRepository } from './blog.repository';
 import { MemberService } from '../member/member.service';
 import { Blog, Prisma } from '@prisma/client';
-import { ICreateBlog, IUpdateBlog } from './blog.interface';
+import { ICreateBlog, IPaginationBlog, IUpdateBlog } from './blog.interface';
+import { IPagination } from '../_common/_utils/interfaces/request.interface';
+import { PrismaService } from '../_common/prisma/prisma.service';
 
 /**
  * Blog 관련 요청을 처리하는 Service Class
@@ -45,11 +47,6 @@ export class BlogService {
     return await this.blogRepository.findFirstByAddress(address);
   }
 
-  /* 블로그 전체조회 */
-  async findMany(): Promise<Blog[]> {
-    return await this.blogRepository.findMany();
-  }
-
   /* 블로그 삭제 */
   async softDelete(id: number, memberId: string): Promise<string> {
     await this.memberService.findUniqueOrThrow(memberId);
@@ -59,14 +56,26 @@ export class BlogService {
     return '선택하신 블로그를 삭제하였습니다.';
   }
 
-  /**
-   * **Find Many**
-   * @remarks Pagination
-   * */
-  async findManyAndCount(data: any) {
-    const options: Prisma.BlogFindManyArgs = { take: data.take, skip: (data.page - 1) * data.take };
-    data.title && (options.where = { title: data.title });
-    data.address && (options.where = { ...options.where, address: data.address });
+  /* 블로그목록 조회 */
+  async findManyAndCount(data: IPaginationBlog): Promise<{ blogs: { id: number }[]; meta: { count: number } }> {
+    const options: Prisma.BlogFindManyArgs = {
+      take: data.take,
+      skip: (data.page - 1) * data.take,
+      orderBy: { [data.orderBy]: data.sortOrder },
+    };
+
+    if (data.searchKeyword && data.searchBy) {
+      switch (data.searchBy) {
+        case 'title':
+          options.where = { title: { contains: data.searchKeyword } };
+          break;
+        case 'tags':
+          options.include = { ...options.include, tags: { where: { name: data.searchKeyword } } };
+          break;
+        case 'nickname':
+          options.where = { member: { nickname: { contains: data.searchKeyword } } };
+      }
+    }
 
     const [blogs, count] = await this.blogRepository.findManyAndCount(options);
     return { blogs, meta: { count } };
