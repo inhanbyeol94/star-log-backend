@@ -1,4 +1,4 @@
-import { CanActivate, ExecutionContext, Injectable, UnauthorizedException } from '@nestjs/common';
+import { CanActivate, ExecutionContext, ForbiddenException, Injectable, UnauthorizedException } from '@nestjs/common';
 import { Observable } from 'rxjs';
 import { ConfigService } from '@nestjs/config';
 import { IRequest } from '../interfaces/request.interface';
@@ -24,7 +24,7 @@ export class UserAuthGuard implements CanActivate {
     const payload = this.jwtService.verify(accessToken);
     console.log('payload', payload);
     if (typeof payload === 'string') throw new UnauthorizedException(payload);
-    if (!payload.isAdmin) throw new UnauthorizedException(payload);
+    if (!payload.isAdmin) throw new ForbiddenException('접근 권한이 없습니다.');
     const sessions = await this.redisService.findFirstByAccessToken(payload.id);
     if (!sessions.includes(accessToken)) return false;
 
