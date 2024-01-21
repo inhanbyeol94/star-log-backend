@@ -63,7 +63,7 @@ export class AuthService {
     }
   }
 
-  async historyFindManyAndCount(id: string, query: IPaginationAuthHistory): Promise<[AuthHistory[], number]> {
+  async historyFindManyAndCount(id: string, query: IPaginationAuthHistory) {
     await this.memberService.findUniqueOrThrow(id);
     return await this.authHistoryService.findManyAndCount(id, query);
   }
