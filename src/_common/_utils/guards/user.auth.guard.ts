@@ -1,6 +1,5 @@
 import { CanActivate, ExecutionContext, Injectable, UnauthorizedException } from '@nestjs/common';
 import { Observable } from 'rxjs';
-import { ConfigService } from '@nestjs/config';
 import { IRequest } from '../interfaces/request.interface';
 import { JwtService } from '../../jwt/jwt.service';
 import { RedisService } from '../../redis/redis.service';
@@ -8,7 +7,6 @@ import { RedisService } from '../../redis/redis.service';
 @Injectable()
 export class UserAuthGuard implements CanActivate {
   constructor(
-    private configService: ConfigService,
     private jwtService: JwtService,
     private redisService: RedisService,
   ) {}
