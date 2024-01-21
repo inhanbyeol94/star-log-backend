@@ -15,26 +15,20 @@ export class KakaoAuthGuard implements CanActivate {
 
   async validateRequest(req: IRequest): Promise<boolean> {
     const code = req.query.code as string;
-    console.log('code', code);
     if (!code) return false;
 
     try {
       const accessToken = await this.getOauthToken(code);
-      console.log('accessToken', accessToken);
       const profile = await this.getProfile(accessToken);
-      console.log('profile', profile);
 
       if (!profile) return false;
 
       const id = String(profile.id) || null;
-      console.log('id', id);
       const profileImage = profile.properties.profile_image || null;
-      console.log('profileImage', profileImage);
 
       if (!id || !profileImage) return false;
 
       req.social = { id, profileImage, platform: platform.KAKAO };
-      console.log('req.social', req.social);
 
       return true;
     } catch (error) {

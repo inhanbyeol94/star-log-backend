@@ -28,8 +28,6 @@ export class GoogleAuthGuard implements CanActivate {
       const email = profile.email || null;
       const nickname = profile.name || null;
 
-      console.log('id,profileImage: ', id, profileImage);
-
       if (!id || !profileImage) return false;
 
       req.social = { id, profileImage, email, nickname, platform: platform.GOOGLE };
