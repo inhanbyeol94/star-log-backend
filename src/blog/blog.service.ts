@@ -28,7 +28,7 @@ export class BlogService {
   /* 블로그 수정 */
   async update(id: number, memberId: string, data: IUpdateBlog): Promise<string> {
     await this.memberService.findUniqueOrThrow(memberId);
-    const blog = await this.findUniqueOrThrow(id);
+    const blog = await this.blogRepository.findUniqueOrThrow(id);
     await this.verifyAccessAuthorityOrThrow(blog.memberId, memberId);
     if (data.address) await this.isExistByAddress(data.address);
     await this.blogRepository.update(id, data);
@@ -38,7 +38,7 @@ export class BlogService {
 
   /* 블로그 아이디별 조회 */
   async findUnique(id: number): Promise<Blog> {
-    return await this.findUniqueOrThrow(id);
+    return await this.blogRepository.findUniqueOrThrow(id);
   }
 
   /* 블로그 주소별 조회 */
@@ -50,7 +50,7 @@ export class BlogService {
   /* 블로그 삭제 */
   async softDelete(id: number, memberId: string): Promise<string> {
     await this.memberService.findUniqueOrThrow(memberId);
-    const blog = await this.findUniqueOrThrow(id);
+    const blog = await this.blogRepository.findUniqueOrThrow(id);
     await this.verifyAccessAuthorityOrThrow(blog.memberId, memberId);
     await this.blogRepository.softDelete(id);
     return '선택하신 블로그를 삭제하였습니다.';
