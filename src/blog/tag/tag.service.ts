@@ -23,4 +23,8 @@ export class TagService {
   async findUnique(id: number): Promise<Tag> {
     return await this.tagRepository.findUniqueOrThrow(id);
   }
+
+  async findManyByBlogId(blogId: number): Promise<Tag[]> {
+    return await this.tagRepository.findManyByBlogId(blogId);
+  }
 }

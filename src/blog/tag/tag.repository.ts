@@ -25,4 +25,8 @@ export class TagRepository {
     if (!tag) throw new NotFoundException('존재하지 않는 리소스입니다.');
     return tag;
   }
+
+  async findManyByBlogId(blogId: number): Promise<Tag[]> {
+    return this.tagRepository.findMany({ where: { blogId } });
+  }
 }

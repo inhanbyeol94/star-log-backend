@@ -1,7 +1,7 @@
 import { Body, Controller, Delete, Param, Patch, Post, Get, Query, UseGuards, Put } from '@nestjs/common';
 import { BlogService } from './blog.service';
 import { BlogAddressDto, BlogIdDto, CreateBlogDto, PaginationBlogDto, UpdateBlogDto } from './blog.dto';
-import { Blog } from '@prisma/client';
+import { Blog, Tag } from '@prisma/client';
 import { Member } from '../_common/_utils/decorators/member.decorator';
 import { IPayload } from '../_common/jwt/jwt.interface';
 import { UserAuthGuard } from '../_common/_utils/guards/user.auth.guard';
@@ -71,5 +71,15 @@ export class BlogController {
   @UseGuards(UserAuthGuard)
   async tagSoftDelete(@Member() member: IPayload, @Param() { id, tagId }: BlogAndTagParamDto): Promise<string> {
     return await this.blogService.tagSoftDelete(id, member.id, tagId);
+  }
+
+  @Get(':id/tags')
+  async tagFindManyById(@Param() { id }: BlogParamDto): Promise<Tag[]> {
+    return await this.blogService.tagFindManyById(id);
+  }
+
+  @Get(':id/tags/:tagId')
+  async tagFindUnique(@Param() { id, tagId }: BlogAndTagParamDto): Promise<Tag> {
+    return await this.blogService.tagFindUnique(id, tagId);
   }
 }

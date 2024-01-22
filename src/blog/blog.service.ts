@@ -123,4 +123,9 @@ export class BlogService {
     await this.blogRepository.findUniqueOrThrow(id);
     return await this.tagService.findUnique(tagId);
   }
+
+  async tagFindManyById(id: number): Promise<Tag[]> {
+    await this.blogRepository.findUniqueOrThrow(id);
+    return await this.tagService.findManyByBlogId(id);
+  }
 }
