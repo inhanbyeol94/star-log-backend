@@ -8,7 +8,7 @@ export class TagRepository {
 
   private tagRepository = this.prisma.extendedClient.tag;
 
-  async create(data: Prisma.TagCreateInput): Promise<Tag> {
+  async create(data: Prisma.TagUncheckedCreateInput): Promise<Tag> {
     return this.tagRepository.create({ data });
   }
 

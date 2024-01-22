@@ -6,7 +6,7 @@ import { Prisma, Tag } from '@prisma/client';
 export class TagService {
   constructor(private tagRepository: TagRepository) {}
 
-  async create(data: Prisma.TagCreateInput): Promise<Tag> {
+  async create(data: Prisma.TagUncheckedCreateInput): Promise<Tag> {
     return await this.tagRepository.create(data);
   }
 
