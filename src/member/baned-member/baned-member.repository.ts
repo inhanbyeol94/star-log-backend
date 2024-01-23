@@ -19,10 +19,10 @@ export class BanedMemberRepository {
     });
   }
 
-  async softDelete(memberId: number): Promise<void> {
-    await this.bannedMemberRepository.delete({
+  async softDelete(memberId: string): Promise<void> {
+    await this.bannedMemberRepository.deleteMany({
       where: {
-        id: memberId,
+        memberId: memberId,
       },
     });
   }

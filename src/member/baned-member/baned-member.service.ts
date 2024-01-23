@@ -16,12 +16,12 @@ export class BanedMemberService implements OnModuleInit {
   }
 
   async create(memberId: string, reason: string, limitedAt: Date): Promise<boolean> {
-    await Promise.all([this.banedMemberRepository.create(memberId, reason, limitedAt), this.redisService.createBannedMember(memberId)]);
+    await Promise.all([this.banedMemberRepository.create(memberId, reason, limitedAt), this.redisService.createBannedMember(memberId, { memberId, reason, limitedAt })]);
     return true;
   }
 
   async softDelete(memberId: string): Promise<boolean> {
-    // await Promise.all([this.banedMemberRepository.softDelete(member.id), this.redisService.deleteBanedMember(memberId)]);
+    await Promise.all([this.banedMemberRepository.softDelete(memberId), this.redisService.deleteBannedMember(memberId)]);
     return true;
   }
 

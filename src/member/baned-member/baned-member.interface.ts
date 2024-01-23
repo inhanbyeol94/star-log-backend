@@ -9,5 +9,5 @@ export interface IBanedMember {
 export interface IBanedMemberInfo {
   memberId: string;
   reason: string;
-  limitedAt: string;
+  limitedAt: Date;
 }
