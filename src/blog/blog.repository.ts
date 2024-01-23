@@ -36,7 +36,7 @@ export class BlogRepository {
 
   /* 블로그 주소찾기 */
   async findFirstByAddress(address: string): Promise<Blog | null> {
-    return this.blogRepository.findFirst({ where: { address } });
+    return this.blogRepository.findFirst({ where: { address }, include: { member: true, tags: true } });
   }
 
   /* 블로그 ID 찾기 */
