@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../_common/prisma/prisma.service';
 import { Blog, Prisma } from '@prisma/client';
+import { IPaginationBlog } from './blog.interface';
 
 /**
  * Blog 관련 요청을 처리하는 Repository Class
@@ -30,8 +31,29 @@ export class BlogRepository {
     return this.blogRepository.softDelete({ id });
   }
 
-  async findManyAndCount(options: Prisma.BlogFindManyArgs) {
-    return this.prisma.$transaction([this.blogRepository.findMany(options), this.blogRepository.count({ where: options.where })]);
+  /* 블로그 목록조회 */
+  async findManyAndCount(data: IPaginationBlog): Promise<{ blogs: { id: number }[]; meta: { count: number } }> {
+    const options: Prisma.BlogFindManyArgs = {
+      take: data.take,
+      skip: (data.page - 1) * data.take,
+      orderBy: { [data.orderBy]: data.sortOrder },
+    };
+
+    if (data.searchKeyword && data.searchBy) {
+      switch (data.searchBy) {
+        case 'title':
+          options.where = { title: { contains: data.searchKeyword } };
+          break;
+        case 'tags':
+          options.include = { ...options.include, tags: { where: { name: data.searchKeyword } } };
+          break;
+        case 'nickname':
+          options.where = { member: { nickname: { contains: data.searchKeyword } } };
+          break;
+      }
+    }
+    const [blogs, count] = await this.prisma.$transaction([this.blogRepository.findMany(options), this.blogRepository.count({ where: options.where })]);
+    return { blogs, meta: { count } };
   }
 
   /* 블로그 주소찾기 */
