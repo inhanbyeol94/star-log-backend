@@ -68,9 +68,9 @@ export class LoggerService extends Logger {
     LoggerService.winstonLogger.info(message, logData ? logData : null);
   }
 
-  error(message: string, trace: string) {
-    super.error(message, trace);
-    LoggerService.winstonLogger.error(message, { trace });
+  error(message: string) {
+    super.error(message);
+    LoggerService.winstonLogger.error(message);
   }
 
   warn(message: string) {

@@ -3,6 +3,7 @@ import { AuthHistoryRepository } from './auth-history.repository';
 import { Prisma } from '@prisma/client';
 import { IPagination } from '../../_common/_utils/interfaces/request.interface';
 import { ICreateAuthHistory, IPaginationAuthHistory } from './auth-history.interface';
+import { logger } from '../../_common/logger/logger.service';
 
 @Injectable()
 export class AuthHistoryService {
@@ -13,7 +14,7 @@ export class AuthHistoryService {
       //로그기록 실패사유로 메인로직에 영향이 없도록 예외처리
       await this.authHistoryRepository.create({ ...data, member: { connect: { id: memberId } } });
     } catch (error) {
-      //todo @유지은 loggerService 브리핑 후 적용예정
+      logger.error(error);
     }
   }
 
@@ -22,7 +23,7 @@ export class AuthHistoryService {
       //로그기록 실패사유로 메인로직에 영향이 없도록 예외처리
       await this.authHistoryRepository.createMany(data.map((p) => ({ ...p, memberId })));
     } catch (error) {
-      //todo @유지은 loggerService 브리핑 후 적용예정
+      logger.error(error);
     }
   }
 
