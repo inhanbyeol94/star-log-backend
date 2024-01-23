@@ -2,13 +2,17 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../_common/prisma/prisma.service';
 import { Blog, Prisma } from '@prisma/client';
 import { IPaginationBlog } from './blog.interface';
+import { PaginationService } from '../_common/pagination/pagination.service';
 
 /**
  * Blog 관련 요청을 처리하는 Repository Class
  */
 @Injectable()
 export class BlogRepository {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private paginationService: PaginationService,
+  ) {}
   private blogRepository = this.prisma.extendedClient.blog;
 
   /* 블로그 생성 */
@@ -32,7 +36,7 @@ export class BlogRepository {
   }
 
   /* 블로그 목록조회 */
-  async findManyAndCount(data: IPaginationBlog): Promise<{ blogs: { id: number }[]; meta: { count: number } }> {
+  async findManyAndCount(data: IPaginationBlog) {
     const options: Prisma.BlogFindManyArgs = {
       take: data.take,
       skip: (data.page - 1) * data.take,
@@ -53,7 +57,7 @@ export class BlogRepository {
       }
     }
     const [blogs, count] = await this.prisma.$transaction([this.blogRepository.findMany(options), this.blogRepository.count({ where: options.where })]);
-    return { blogs, meta: { count } };
+    return [blogs, this.paginationService.metaData(count, data)];
   }
 
   /* 블로그 주소찾기 */
