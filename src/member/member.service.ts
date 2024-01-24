@@ -2,7 +2,7 @@ import { ConflictException, Injectable, NotFoundException } from '@nestjs/common
 import { Member } from '@prisma/client';
 import { RedisService } from '../_common/redis/redis.service';
 import { MemberRepository } from './member.repository';
-import { IUserUpdate } from './member.interface';
+import { IMemberUpdate } from './member.interface';
 import { ISocial } from '../auth/auth.interface';
 import { BannedMemberService } from './banned-member/banned-member.service';
 
@@ -16,7 +16,7 @@ export class MemberService {
     return await this.memberRepository.create({ socialId: data.id, email: data.email, nickname: data.nickname, profileImage: data.profileImage, platform: data.platform });
   }
 
-  async update(id: string, data: IUserUpdate): Promise<string> {
+  async update(id: string, data: IMemberUpdate): Promise<string> {
     await this.findUniqueOrThrow(id);
     if (data.nickname) await this.existNickname(id, data.nickname);
     await Promise.all([this.memberRepository.update(id, data), this.redisService.deleteManyAccessToken(id)]);
