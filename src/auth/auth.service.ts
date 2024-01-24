@@ -1,5 +1,4 @@
 import { ForbiddenException, Injectable } from '@nestjs/common';
-import { ISocial } from './auth.interface';
 import { MemberService } from '../member/member.service';
 import { JwtService } from '../_common/jwt/jwt.service';
 import { action, Member } from '@prisma/client';
@@ -8,6 +7,7 @@ import { AuthHistoryService } from './auth-history/auth-history.service';
 import { IPaginationAuthHistory } from './auth-history/auth-history.interface';
 import { IIpAndCountry } from '../_common/_utils/interfaces/request.interface';
 import { BannedMemberService } from '../member/banned-member/banned-member.service';
+import { ISocial } from './interfaces/social.interface';
 
 @Injectable()
 export class AuthService {
