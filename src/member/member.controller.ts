@@ -1,6 +1,6 @@
 import { Body, Controller, Delete, Get, Put } from '@nestjs/common';
 import { MemberService } from './member.service';
-import { MemberUpdateDto } from './member.dto';
+import { MemberUpdateDto } from './dtos/update/member.dto';
 import { Member } from 'src/_common/_utils/decorators/member.decorator';
 import { IPayload } from '../_common/jwt/jwt.interface';
 
