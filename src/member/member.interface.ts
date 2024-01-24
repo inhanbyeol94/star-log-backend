@@ -1,4 +1,4 @@
-export interface IUpdateUser {
+export interface IMemberUpdate {
   email?: string;
   nickname?: string;
   phoneNumber?: string;

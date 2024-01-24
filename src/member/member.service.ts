@@ -2,22 +2,20 @@ import { ConflictException, Injectable, NotFoundException } from '@nestjs/common
 import { Member } from '@prisma/client';
 import { RedisService } from '../_common/redis/redis.service';
 import { MemberRepository } from './member.repository';
-import { IUpdateUser } from './member.interface';
-import { BannedMemberService } from './banned-member/banned-member.service';
-import { ISocial } from '../auth/interfaces/social.interface';
+import { IMemberUpdate } from './member.interface';
+import { ISocial } from '../auth/auth.interface';
 
 @Injectable()
 export class MemberService {
   constructor(
     private redisService: RedisService,
     private memberRepository: MemberRepository,
-    private bannedMemberService: BannedMemberService,
   ) {}
   async create(data: ISocial): Promise<Member> {
     return await this.memberRepository.create({ socialId: data.id, email: data.email, nickname: data.nickname, profileImage: data.profileImage, platform: data.platform });
   }
 
-  async update(id: string, data: IUpdateUser): Promise<string> {
+  async update(id: string, data: IMemberUpdate): Promise<string> {
     await this.findUniqueOrThrow(id);
     if (data.nickname) await this.existNickname(id, data.nickname);
     await Promise.all([this.memberRepository.update(id, data), this.redisService.deleteManyAccessToken(id)]);
