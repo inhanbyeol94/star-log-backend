@@ -2,11 +2,8 @@ import { ConflictException, ForbiddenException, Injectable, NotFoundException } 
 import { BlogRepository } from './blog.repository';
 import { MemberService } from '../member/member.service';
 import { Blog, Prisma, Tag } from '@prisma/client';
-import { ICreateBlog, IPaginationBlog, IUpdateBlog } from './blog.interface';
+import { IBlogFindManyAndMetaData } from './dtos/find-many-and-meta-data/request.interface';
 import { TagService } from './tag/tag.service';
-import { IPagination } from '../_common/_utils/interfaces/request.interface';
-import { PrismaService } from '../_common/prisma/prisma.service';
-import { white } from 'chalk';
 
 /**
  * Blog 관련 요청을 처리하는 Service Class
@@ -20,7 +17,7 @@ export class BlogService {
   ) {}
 
   /* 블로그 생성 */
-  async create(memberId: string, data: ICreateBlog): Promise<string> {
+  async create(memberId: string, data: Prisma.BlogCreateWithoutMemberInput): Promise<string> {
     await this.memberService.findUniqueOrThrow(memberId);
     await this.isExistByAddress(data.address);
 
@@ -29,11 +26,11 @@ export class BlogService {
   }
 
   /* 블로그 수정 */
-  async update(id: number, memberId: string, data: IUpdateBlog): Promise<string> {
+  async update(id: number, memberId: string, data: Prisma.BlogUpdateInput): Promise<string> {
     await this.memberService.findUniqueOrThrow(memberId);
     const blog = await this.blogRepository.findUniqueOrThrow(id);
     await this.verifyAccessAuthorityOrThrow(blog.memberId, memberId);
-    if (data.address) await this.isExistByAddress(data.address);
+    if (data.address) await this.isExistByAddress(data.address as string);
     await this.blogRepository.update(id, data);
 
     return '블로그 수정이 성공적으로 완료되었습니다.';
@@ -60,8 +57,8 @@ export class BlogService {
   }
 
   /* 블로그목록 조회 */
-  async findManyAndCount(data: IPaginationBlog) {
-    return await this.blogRepository.findManyAndCount(data);
+  async findManyAndMetaData(data: IBlogFindManyAndMetaData) {
+    return await this.blogRepository.findManyAndMetaData(data);
   }
 
   /* 블로그 주소 중복검증 */

@@ -1,6 +1,5 @@
 import { Body, Controller, Delete, Param, Patch, Post, Get, Query, UseGuards, Put } from '@nestjs/common';
 import { BlogService } from './blog.service';
-import { BlogAddressDto, BlogIdDto, CreateBlogDto, PaginationBlogDto, UpdateBlogDto } from './blog.dto';
 import { Blog, Tag } from '@prisma/client';
 import { Member } from '../_common/_utils/decorators/member.decorator';
 import { IPayload } from '../_common/jwt/jwt.interface';
@@ -8,6 +7,10 @@ import { UserAuthGuard } from '../_common/_utils/guards/user.auth.guard';
 import { TagCreateDto } from './tag/dtos/create/request.dto';
 import { BlogAndTagParamDto, BlogParamDto } from './dtos/param.request.dto';
 import { TagUpdateDto } from './tag/dtos/update/request.dto';
+import { BlogCreateDto } from './dtos/create/request.dto';
+import { BlogUpdateDto } from './dtos/update/request.dto';
+import { BlogFindManyAndMetaDataDto } from './dtos/find-many-and-meta-data/request.dto';
+import { BlogAddressDto } from './dtos/find-first-by-address/request.dto';
 
 /**
  * Blog 관련 요청을 처리하는 Controller Class
@@ -19,26 +22,26 @@ export class BlogController {
   /* 블로그 생성 */
   @Post()
   @UseGuards(UserAuthGuard)
-  async create(@Member() member: IPayload, @Body() body: CreateBlogDto): Promise<string> {
+  async create(@Member() member: IPayload, @Body() body: BlogCreateDto): Promise<string> {
     return await this.blogService.create(member.id, body);
   }
 
   /* 블로그 수정 */
   @Patch(':id')
   @UseGuards(UserAuthGuard)
-  async update(@Member() member: IPayload, @Param() param: BlogIdDto, @Body() body: UpdateBlogDto): Promise<string> {
+  async update(@Member() member: IPayload, @Param() param: BlogParamDto, @Body() body: BlogUpdateDto): Promise<string> {
     return await this.blogService.update(param.id, member.id, body);
   }
 
   /* 블로그 전체조회 */
   @Get()
-  async findManyAndCount(@Query() query: PaginationBlogDto) {
-    return await this.blogService.findManyAndCount(query);
+  async findManyAndMetaData(@Query() query: BlogFindManyAndMetaDataDto) {
+    return await this.blogService.findManyAndMetaData(query);
   }
 
   /* 블로그 ID별 조회 */
   @Get(':id')
-  async findFirstById(@Param() param: BlogIdDto): Promise<Blog> {
+  async findFirstById(@Param() param: BlogParamDto): Promise<Blog> {
     return await this.blogService.findUnique(param.id);
   }
 
@@ -51,7 +54,7 @@ export class BlogController {
   /* 블로그 삭제 */
   @Delete(':id')
   @UseGuards(UserAuthGuard)
-  async delete(@Member() member: IPayload, @Param() param: BlogIdDto): Promise<string> {
+  async delete(@Member() member: IPayload, @Param() param: BlogParamDto): Promise<string> {
     return await this.blogService.softDelete(param.id, member.id);
   }
 
