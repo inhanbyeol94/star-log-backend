@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { RedisRepository } from './redis.repository';
-import { IBannedMemberInfo } from '../../member/banned-member/banned-member.interface';
+import { IBannedMemberInfo } from '../../member/banned-member/interfaces/create/banned-member.interface';
 import { BannedMember } from '@prisma/client';
 
 @Injectable()

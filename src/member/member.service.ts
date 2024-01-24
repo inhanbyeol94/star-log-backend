@@ -2,7 +2,7 @@ import { ConflictException, Injectable, NotFoundException } from '@nestjs/common
 import { Member } from '@prisma/client';
 import { RedisService } from '../_common/redis/redis.service';
 import { MemberRepository } from './member.repository';
-import { IMemberUpdate } from './member.interface';
+import { IMemberUpdate } from './interfaces/update/member.interface';
 import { ISocial } from '../auth/auth.interface';
 
 @Injectable()
