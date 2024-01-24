@@ -3,8 +3,8 @@ import { Member } from '@prisma/client';
 import { RedisService } from '../_common/redis/redis.service';
 import { MemberRepository } from './member.repository';
 import { IUpdateUser } from './member.interface';
-import { ISocial } from '../auth/auth.interface';
 import { BannedMemberService } from './banned-member/banned-member.service';
+import { ISocial } from '../auth/interfaces/social.interface';
 
 @Injectable()
 export class MemberService {
