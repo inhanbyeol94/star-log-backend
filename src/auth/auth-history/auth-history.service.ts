@@ -27,7 +27,7 @@ export class AuthHistoryService {
     }
   }
 
-  async findManyAndCount(memberId: string, data: IPaginationAuthHistory) {
-    return await this.authHistoryRepository.findManyAndCount(memberId, data);
+  async findManyAndMetadata(memberId: string, data: IPaginationAuthHistory) {
+    return await this.authHistoryRepository.findManyAndMetadata(memberId, data);
   }
 }

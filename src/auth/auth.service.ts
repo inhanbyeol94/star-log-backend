@@ -2,7 +2,7 @@ import { ForbiddenException, Injectable } from '@nestjs/common';
 import { ISocial } from './auth.interface';
 import { MemberService } from '../member/member.service';
 import { JwtService } from '../_common/jwt/jwt.service';
-import { action, AuthHistory, Member } from '@prisma/client';
+import { action, Member } from '@prisma/client';
 import { RedisService } from '../_common/redis/redis.service';
 import { AuthHistoryService } from './auth-history/auth-history.service';
 import { IPaginationAuthHistory } from './auth-history/auth-history.interface';
@@ -71,6 +71,6 @@ export class AuthService {
 
   async historyFindManyAndCount(id: string, query: IPaginationAuthHistory) {
     await this.memberService.findUniqueOrThrow(id);
-    return await this.authHistoryService.findManyAndCount(id, query);
+    return await this.authHistoryService.findManyAndMetadata(id, query);
   }
 }
