@@ -37,11 +37,7 @@ export class BlogRepository {
 
   /* 블로그 목록조회 */
   async findManyAndCount(data: IPaginationBlog) {
-    const options: Prisma.BlogFindManyArgs = {
-      take: data.take,
-      skip: (data.page - 1) * data.take,
-      orderBy: { [data.orderBy]: data.sortOrder },
-    };
+    const options: Prisma.BlogFindManyArgs = {};
 
     if (data.searchKeyword && data.searchBy) {
       switch (data.searchBy) {
@@ -49,14 +45,17 @@ export class BlogRepository {
           options.where = { title: { contains: data.searchKeyword } };
           break;
         case 'tags':
-          options.include = { ...options.include, tags: { where: { name: data.searchKeyword } } };
+          options.where = { tags: { some: { name: data.searchKeyword } } };
           break;
         case 'nickname':
           options.where = { member: { nickname: { contains: data.searchKeyword } } };
           break;
       }
     }
-    const [blogs, count] = await this.prisma.$transaction([this.blogRepository.findMany(options), this.blogRepository.count({ where: options.where })]);
+    const [blogs, count] = await this.prisma.$transaction([
+      this.blogRepository.findMany({ take: data.take, skip: (data.page - 1) * data.take, orderBy: { [data.orderBy]: data.sortOrder } }),
+      this.blogRepository.count({ where: options.where }),
+    ]);
     return [blogs, this.paginationService.metaData(count, data)];
   }
 
