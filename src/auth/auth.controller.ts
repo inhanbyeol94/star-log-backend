@@ -41,7 +41,7 @@ export class AuthController {
   }
 
   @Get('histories/me')
-  async historyFindManyAndCount(@Member() member: IPayload, @Query() query: AuthHistoryPaginationDto): Promise<[IAuthHistory[], number]> {
+  async historyFindManyAndCount(@Member() member: IPayload, @Query() query: AuthHistoryPaginationDto) {
     return await this.authService.historyFindManyAndCount(member.id, query);
   }
 }
