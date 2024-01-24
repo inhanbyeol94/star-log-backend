@@ -1,9 +1,6 @@
-import { Injectable, OnModuleInit } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { RedisRepository } from './redis.repository';
-import { logger } from '../logger/logger.service';
-import { BANED_MEMBERS_KEY } from './redis.config';
-import { BannedMember } from '@prisma/client';
-import { IBanedMemberInfo } from '../../member/baned-member/baned-member.interface';
+import { IBannedMember, IBannedMemberInfo } from '../../member/banned-member/banned-member.interface';
 
 @Injectable()
 export class RedisService {
@@ -32,29 +29,25 @@ export class RedisService {
     return userTokens;
   }
 
-  async findManyBannedMember(): Promise<string[]> {
-    const bannedMembers = await this.redisRepository.find<string[]>(BANED_MEMBERS_KEY);
-    return bannedMembers || [];
-  }
-
-  async isValidBannedMember(memberId: string): Promise<any> {
+  async findBannedMember(memberId: string): Promise<any> {
     const memberKey: string = `BAN${memberId}`;
-    const banedMember = (await this.redisRepository.find(memberKey)) || [];
+    const bannedMember = (await this.redisRepository.find(memberKey)) || [];
 
-    return banedMember;
+    return bannedMember;
   }
 
-  async setBannedMember(bannedMembers: IBanedMemberInfo[]): Promise<void> {
+  async setBannedMember(bannedMembers: IBannedMember[]): Promise<void> {
     for (const bannedMember of bannedMembers) {
       const memberKey: string = `BAN${bannedMember.memberId}`;
-      await this.redisRepository.upsert(memberKey, bannedMember, 86400000 * 15); // 15일
+      await this.redisRepository.upsert(memberKey, bannedMember, 0);
     }
+
     // console.log('isValidBannedMember: ', await this.isValidBannedMember('fa03e15f-ecb4-4b45-b47e-344ef516b41d'));
   }
 
-  async createBannedMember(memberId: string, data: IBanedMemberInfo): Promise<void> {
+  async createBannedMember(memberId: string, data: IBannedMemberInfo): Promise<void> {
     const memberKey = `BAN${memberId}`;
-    await this.redisRepository.upsert(memberKey, data, 86400000 * 15); // 15일
+    await this.redisRepository.upsert(memberKey, data, 0);
   }
 
   async deleteBannedMember(memberId: string): Promise<void> {

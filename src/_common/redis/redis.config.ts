@@ -1,1 +1,1 @@
-export const BANED_MEMBERS_KEY: string = 'banedMembers';
+export const BANNED_MEMBERS_KEY: string = 'bannedMembers';

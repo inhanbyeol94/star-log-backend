@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../_common/prisma/prisma.service';
 import { BannedMember } from '@prisma/client';
-import { IBanedMemberInfo } from './baned-member.interface';
+import { IBannedMember } from './banned-member.interface';
 
 @Injectable()
-export class BanedMemberRepository {
+export class BannedMemberRepository {
   constructor(private prisma: PrismaService) {}
 
   private bannedMemberRepository = this.prisma.extendedClient.bannedMember;
@@ -27,14 +27,8 @@ export class BanedMemberRepository {
     });
   }
 
-  async findMany(): Promise<IBanedMemberInfo[]> {
-    return this.bannedMemberRepository.findMany({
-      select: {
-        memberId: true,
-        reason: true,
-        limitedAt: true,
-      },
-    });
+  async findMany(): Promise<IBannedMember[]> {
+    return this.bannedMemberRepository.findMany({});
   }
 
   async findManyByMemberId(memberId: string): Promise<BannedMember[]> {

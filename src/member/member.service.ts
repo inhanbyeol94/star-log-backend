@@ -4,14 +4,14 @@ import { RedisService } from '../_common/redis/redis.service';
 import { MemberRepository } from './member.repository';
 import { IUpdateUser } from './member.interface';
 import { ISocial } from '../auth/auth.interface';
-import { BanedMemberService } from './baned-member/baned-member.service';
+import { BannedMemberService } from './banned-member/banned-member.service';
 
 @Injectable()
 export class MemberService {
   constructor(
     private redisService: RedisService,
     private memberRepository: MemberRepository,
-    private banedMemberService: BanedMemberService,
+    private bannedMemberService: BannedMemberService,
   ) {}
   async create(data: ISocial): Promise<Member> {
     return await this.memberRepository.create({ socialId: data.id, email: data.email, nickname: data.nickname, profileImage: data.profileImage, platform: data.platform });

@@ -1,4 +1,5 @@
-export interface IBanedMember {
+export interface IBannedMember {
+  memberId?: string;
   email?: string;
   nickname?: string;
   phoneNumber?: string;
@@ -6,8 +7,7 @@ export interface IBanedMember {
   globalAccess?: boolean;
 }
 
-export interface IBanedMemberInfo {
-  memberId: string;
+export interface IBannedMemberInfo {
   reason: string;
   limitedAt: Date;
 }
