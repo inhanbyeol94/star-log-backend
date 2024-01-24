@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../_common/prisma/prisma.service';
 import { Blog, Prisma } from '@prisma/client';
 import { IPaginationBlog } from './blog.interface';
@@ -67,5 +67,11 @@ export class BlogRepository {
   /* 블로그 ID 찾기 */
   async findUnique(id: number): Promise<Blog | null> {
     return this.blogRepository.findFirst({ where: { id } });
+  }
+
+  async findUniqueOrThrow(id: number): Promise<Blog> {
+    const blog = await this.blogRepository.findUnique({ where: { id } });
+    if (!blog) throw new NotFoundException('해당하는 블로그가 존재하지 않습니다.');
+    return blog;
   }
 }
