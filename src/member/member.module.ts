@@ -3,10 +3,10 @@ import { MemberService } from './member.service';
 import { MemberController } from './member.controller';
 import { RedisModule } from '../_common/redis/redis.module';
 import { MemberRepository } from './member.repository';
-import { BanedMemberModule } from './baned-member/baned-member.module';
+import { BannedMemberModule } from './banned-member/banned-member.module';
 
 @Module({
-  imports: [RedisModule, BanedMemberModule],
+  imports: [RedisModule, BannedMemberModule],
   providers: [MemberService, MemberRepository],
   controllers: [MemberController],
   exports: [MemberService],

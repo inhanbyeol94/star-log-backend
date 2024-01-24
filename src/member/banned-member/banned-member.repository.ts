@@ -1,9 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../_common/prisma/prisma.service';
 import { BannedMember } from '@prisma/client';
+import { IBannedMember } from './banned-member.interface';
 
 @Injectable()
-export class BanedMemberRepository {
+export class BannedMemberRepository {
   constructor(private prisma: PrismaService) {}
 
   private bannedMemberRepository = this.prisma.extendedClient.bannedMember;
@@ -18,12 +19,16 @@ export class BanedMemberRepository {
     });
   }
 
-  async softDelete(memberId: number): Promise<void> {
-    await this.bannedMemberRepository.delete({
+  async softDelete(memberId: string): Promise<void> {
+    await this.bannedMemberRepository.deleteMany({
       where: {
-        id: memberId,
+        memberId: memberId,
       },
     });
+  }
+
+  async findMany(): Promise<IBannedMember[]> {
+    return this.bannedMemberRepository.findMany({});
   }
 
   async findManyByMemberId(memberId: string): Promise<BannedMember[]> {

@@ -7,12 +7,14 @@ import { RedisService } from '../_common/redis/redis.service';
 import { AuthHistoryService } from './auth-history/auth-history.service';
 import { IPaginationAuthHistory } from './auth-history/auth-history.interface';
 import { IIpAndCountry } from '../_common/_utils/interfaces/request.interface';
+import { BannedMemberService } from '../member/banned-member/banned-member.service';
 
 @Injectable()
 export class AuthService {
   constructor(
     private authHistoryService: AuthHistoryService,
     private memberService: MemberService,
+    private bannedMemberService: BannedMemberService,
     private jwtService: JwtService,
     private redisService: RedisService,
   ) {}
@@ -54,7 +56,11 @@ export class AuthService {
       throw new ForbiddenException('접속이 제한된 계정입니다.');
     }
 
-    //todo 기간 밴 검증 추가필요 (BannedMember)
+    //밴 여부 검증
+    const bannedMember = await this.bannedMemberService.isValidBannedMember(member.id);
+    if (bannedMember) {
+      throw new ForbiddenException('접속이 제한된 계정입니다.');
+    }
 
     //해외로그인 차단 검증
     if (!member.globalAccess && country !== 'KR') {
