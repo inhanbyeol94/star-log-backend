@@ -1,17 +1,16 @@
-import { Controller, Delete, Get, Ip, Query, UseGuards } from '@nestjs/common';
+import { Controller, Delete, Get, Query, UseGuards } from '@nestjs/common';
 import { NaverAuthGuard } from '../_common/_utils/guards/naver.oauth.guard';
 import { Social } from '../_common/_utils/decorators/social.decorator';
-import { ISocial } from './auth.interface';
 import { AuthService } from './auth.service';
 import { GoogleAuthGuard } from '../_common/_utils/guards/google.oauth.guard';
 import { Member } from '../_common/_utils/decorators/member.decorator';
 import { IPayload } from '../_common/jwt/jwt.interface';
 import { AccessToken } from '../_common/_utils/decorators/access-token.decorator';
 import { AuthHistoryPaginationDto } from './auth-history/auth-history.dto';
-import { IAuthHistory } from './auth-history/auth-history.interface';
 import { IpAndCountry } from '../_common/_utils/decorators/ip-and-country.decorator';
 import { IIpAndCountry } from '../_common/_utils/interfaces/request.interface';
 import { KakaoAuthGuard } from '../_common/_utils/guards/kakao.oauth.guard';
+import { ISocial } from './interfaces/social.interface';
 
 @Controller('auth')
 export class AuthController {

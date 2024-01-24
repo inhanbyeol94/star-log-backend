@@ -1,6 +1,6 @@
 import { Request } from 'express';
 import { IPayload } from '../../jwt/jwt.interface';
-import { ISocial } from '../../../auth/auth.interface';
+import { ISocial } from '../../../auth/interfaces/social.interface';
 
 export interface IRequest extends Request {
   social: ISocial;
