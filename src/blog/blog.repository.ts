@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../_common/prisma/prisma.service';
 import { Blog, Prisma } from '@prisma/client';
-import { IPaginationBlog } from './blog.interface';
+import { IBlogFindManyAndMetaData } from './dtos/find-many-and-meta-data/request.interface';
 import { PaginationService } from '../_common/pagination/pagination.service';
 
 /**
@@ -36,7 +36,7 @@ export class BlogRepository {
   }
 
   /* 블로그 목록조회 */
-  async findManyAndCount(data: IPaginationBlog) {
+  async findManyAndMetaData(data: IBlogFindManyAndMetaData) {
     const options: Prisma.BlogFindManyArgs = {};
 
     if (data.searchKeyword && data.searchBy) {
