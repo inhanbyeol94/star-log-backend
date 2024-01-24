@@ -1,5 +1,5 @@
 import { IsBoolean, IsOptional, IsString } from '@inhanbyeol/class-validator';
-import { IMemberUpdate } from '../../interfaces/update/member.interface';
+import { IMemberUpdate } from './request.interface';
 
 export class MemberUpdateDto implements IMemberUpdate {
   @IsOptional()
