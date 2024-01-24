@@ -1,10 +1,13 @@
-import { Body, Controller, Delete, Param, Patch, Post, Get, Query, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Param, Patch, Post, Get, Query, UseGuards, Put } from '@nestjs/common';
 import { BlogService } from './blog.service';
 import { BlogAddressDto, BlogIdDto, CreateBlogDto, PaginationBlogDto, UpdateBlogDto } from './blog.dto';
-import { Blog } from '@prisma/client';
+import { Blog, Tag } from '@prisma/client';
 import { Member } from '../_common/_utils/decorators/member.decorator';
 import { IPayload } from '../_common/jwt/jwt.interface';
 import { UserAuthGuard } from '../_common/_utils/guards/user.auth.guard';
+import { TagCreateDto } from './tag/dtos/create/request.dto';
+import { BlogAndTagParamDto, BlogParamDto } from './dtos/param.request.dto';
+import { TagUpdateDto } from './tag/dtos/update/request.dto';
 
 /**
  * Blog 관련 요청을 처리하는 Controller Class
@@ -50,5 +53,33 @@ export class BlogController {
   @UseGuards(UserAuthGuard)
   async delete(@Member() member: IPayload, @Param() param: BlogIdDto): Promise<string> {
     return await this.blogService.softDelete(param.id, member.id);
+  }
+
+  @Post(':id/tags')
+  @UseGuards(UserAuthGuard)
+  async tagCreate(@Member() member: IPayload, @Body() body: TagCreateDto, @Param() { id }: BlogParamDto): Promise<string> {
+    return await this.blogService.tagCreate(id, member.id, body);
+  }
+
+  @Put(':id/tags/:tagId')
+  @UseGuards(UserAuthGuard)
+  async tagUpdate(@Member() member: IPayload, @Body() body: TagUpdateDto, @Param() { id, tagId }: BlogAndTagParamDto): Promise<string> {
+    return await this.blogService.tagUpdate(id, member.id, tagId, body);
+  }
+
+  @Delete(':id/tags/:tagId')
+  @UseGuards(UserAuthGuard)
+  async tagSoftDelete(@Member() member: IPayload, @Param() { id, tagId }: BlogAndTagParamDto): Promise<string> {
+    return await this.blogService.tagSoftDelete(id, member.id, tagId);
+  }
+
+  @Get(':id/tags')
+  async tagFindManyById(@Param() { id }: BlogParamDto): Promise<Tag[]> {
+    return await this.blogService.tagFindManyById(id);
+  }
+
+  @Get(':id/tags/:tagId')
+  async tagFindUnique(@Param() { id, tagId }: BlogAndTagParamDto): Promise<Tag> {
+    return await this.blogService.tagFindUnique(id, tagId);
   }
 }
