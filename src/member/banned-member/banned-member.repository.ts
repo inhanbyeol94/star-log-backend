@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../_common/prisma/prisma.service';
 import { BannedMember } from '@prisma/client';
-import { IBannedMember } from './banned-member.interface';
 
 @Injectable()
 export class BannedMemberRepository {
@@ -27,7 +26,7 @@ export class BannedMemberRepository {
     });
   }
 
-  async findMany(): Promise<IBannedMember[]> {
+  async findMany(): Promise<BannedMember[]> {
     return this.bannedMemberRepository.findMany({});
   }
 

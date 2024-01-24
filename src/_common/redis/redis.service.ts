@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { RedisRepository } from './redis.repository';
-import { IBannedMember, IBannedMemberInfo } from '../../member/banned-member/banned-member.interface';
+import { IBannedMemberInfo } from '../../member/banned-member/banned-member.interface';
+import { BannedMember } from '@prisma/client';
 
 @Injectable()
 export class RedisService {
@@ -36,7 +37,7 @@ export class RedisService {
     return bannedMember;
   }
 
-  async setBannedMember(bannedMembers: IBannedMember[]): Promise<void> {
+  async setBannedMember(bannedMembers: BannedMember[]): Promise<void> {
     for (const bannedMember of bannedMembers) {
       const memberKey: string = `BAN${bannedMember.memberId}`;
       await this.redisRepository.upsert(memberKey, bannedMember, 0);
