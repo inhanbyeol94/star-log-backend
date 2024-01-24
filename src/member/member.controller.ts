@@ -1,6 +1,6 @@
 import { Body, Controller, Delete, Get, Put } from '@nestjs/common';
 import { MemberService } from './member.service';
-import { UpdateMemberDto } from './member.dto';
+import { MemberUpdateDto } from './member.dto';
 import { Member } from 'src/_common/_utils/decorators/member.decorator';
 import { IPayload } from '../_common/jwt/jwt.interface';
 
@@ -10,7 +10,7 @@ export class MemberController {
 
   @Put()
   //todo guard 추가예정
-  async update(@Member() member: IPayload, @Body() body: UpdateMemberDto) {
+  async update(@Member() member: IPayload, @Body() body: MemberUpdateDto) {
     return await this.memberService.update(member.id, body);
   }
 

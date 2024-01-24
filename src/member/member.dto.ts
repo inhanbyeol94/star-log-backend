@@ -1,8 +1,8 @@
 import { IsBoolean, IsOptional, IsString } from '@inhanbyeol/class-validator';
-import { IUpdateUser } from './member.interface';
+import { IUserUpdate } from './member.interface';
 
 /** **업데이트 DTO** */
-export class UpdateMemberDto implements IUpdateUser {
+export class MemberUpdateDto implements IUserUpdate {
   @IsOptional()
   @IsString()
   email?: string;
