@@ -4,6 +4,9 @@ import { MemberService } from '../member/member.service';
 import { Blog, Prisma, Tag } from '@prisma/client';
 import { ICreateBlog, IPaginationBlog, IUpdateBlog } from './blog.interface';
 import { TagService } from './tag/tag.service';
+import { IPagination } from '../_common/_utils/interfaces/request.interface';
+import { PrismaService } from '../_common/prisma/prisma.service';
+import { white } from 'chalk';
 
 /**
  * Blog 관련 요청을 처리하는 Service Class
@@ -57,28 +60,8 @@ export class BlogService {
   }
 
   /* 블로그목록 조회 */
-  async findManyAndCount(data: IPaginationBlog): Promise<{ blogs: { id: number }[]; meta: { count: number } }> {
-    const options: Prisma.BlogFindManyArgs = {
-      take: data.take,
-      skip: (data.page - 1) * data.take,
-      orderBy: { [data.orderBy]: data.sortOrder },
-    };
-
-    if (data.searchKeyword && data.searchBy) {
-      switch (data.searchBy) {
-        case 'title':
-          options.where = { title: { contains: data.searchKeyword } };
-          break;
-        case 'tags':
-          options.include = { ...options.include, tags: { where: { name: data.searchKeyword } } };
-          break;
-        case 'nickname':
-          options.where = { member: { nickname: { contains: data.searchKeyword } } };
-      }
-    }
-
-    const [blogs, count] = await this.blogRepository.findManyAndCount(options);
-    return { blogs, meta: { count } };
+  async findManyAndCount(data: IPaginationBlog) {
+    return await this.blogRepository.findManyAndCount(data);
   }
 
   /* 블로그 주소 중복검증 */
