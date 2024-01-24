@@ -18,13 +18,13 @@ export class MemberService {
   async update(id: string, data: IMemberUpdate): Promise<string> {
     await this.findUniqueOrThrow(id);
     if (data.nickname) await this.existNickname(id, data.nickname);
-    await Promise.all([this.memberRepository.update(id, data), this.redisService.deleteManyAccessToken(id)]);
+    await Promise.all([this.memberRepository.update(id, data), this.redisService.accessTokenDeleteMany(id)]);
     return '정보가 수정되었습니다.\n보안 상 모든 기기에서 로그아웃되며, 재로그인이 필요합니다.';
   }
 
   async softDelete(id: string): Promise<string> {
     await this.findUniqueOrThrow(id);
-    await Promise.all([this.memberRepository.softDelete(id), this.redisService.deleteManyAccessToken(id)]);
+    await Promise.all([this.memberRepository.softDelete(id), this.redisService.accessTokenDeleteMany(id)]);
     return '탈퇴가 완료되었습니다.';
   }
 

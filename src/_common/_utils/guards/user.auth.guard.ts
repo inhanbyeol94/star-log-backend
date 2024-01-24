@@ -21,7 +21,7 @@ export class UserAuthGuard implements CanActivate {
 
     const payload = this.jwtService.verify(accessToken);
     if (typeof payload === 'string') throw new UnauthorizedException(payload);
-    const sessions = await this.redisService.findFirstByAccessToken(payload.id);
+    const sessions = await this.redisService.accessTokenFindMany(payload.id);
     if (!sessions.includes(accessToken)) return false;
 
     req.member = payload;

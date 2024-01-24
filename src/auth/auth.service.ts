@@ -27,7 +27,7 @@ export class AuthService {
       const createMember = await this.memberService.create(data);
       await this.authHistoryService.create(createMember.id, { ip, country, action: action.REQUEST, detail: '로그인 시도' });
       const accessToken = this.jwtService.sign(createMember);
-      await this.redisService.createAccessToken(createMember.id, accessToken);
+      await this.redisService.accessTokenCreate(createMember.id, accessToken);
       await this.authHistoryService.create(createMember.id, { ip, country, action: action.SUCCESS, detail: '로그인 성공' });
       return accessToken;
     }
@@ -36,14 +36,14 @@ export class AuthService {
     await this.authHistoryService.create(member.id, { ip, country, action: action.REQUEST, detail: '로그인 시도' });
     await this.verify(member, ipAndCountry);
     const accessToken = this.jwtService.sign(member);
-    await this.redisService.createAccessToken(member.id, accessToken);
+    await this.redisService.accessTokenCreate(member.id, accessToken);
     await this.authHistoryService.create(member.id, { ip, country, action: action.SUCCESS, detail: '로그인 성공' });
     return accessToken;
   }
 
   async logout(memberId: string, accessToken: string, ipAndCountry: IIpAndCountry): Promise<string> {
     const { ip, country } = ipAndCountry;
-    await this.redisService.deleteAccessToken(memberId, accessToken);
+    await this.redisService.accessTokenDelete(memberId, accessToken);
     await this.authHistoryService.create(memberId, { ip, country, action: action.LOGOUT, detail: '로그아웃 성공' });
     return '로그아웃이 완료되었습니다.';
   }
