@@ -14,12 +14,12 @@ export class BannedMemberService implements OnModuleInit {
   }
 
   async create(memberId: string, reason: string, limitedAt: Date): Promise<boolean> {
-    await Promise.all([this.bannedMemberRepository.create(memberId, reason, limitedAt), this.redisService.createBannedMember(memberId, { reason, limitedAt })]);
+    await Promise.all([this.bannedMemberRepository.create(memberId, reason, limitedAt), this.redisService.bannedMemberCreate(memberId, { reason, limitedAt })]);
     return true;
   }
 
   async softDelete(memberId: string): Promise<boolean> {
-    await Promise.all([this.bannedMemberRepository.softDelete(memberId), this.redisService.deleteBannedMember(memberId)]);
+    await Promise.all([this.bannedMemberRepository.softDelete(memberId), this.redisService.bannedMemberDelete(memberId)]);
     return true;
   }
 
@@ -28,13 +28,13 @@ export class BannedMemberService implements OnModuleInit {
   }
 
   async isValidBannedMember(memberId: string): Promise<boolean> {
-    const bannedMember = await this.redisService.findBannedMember(memberId);
+    const bannedMember = await this.redisService.bannedMemberFindMany(memberId);
     return !!bannedMember;
   }
 
   async initializeBannedMembers(): Promise<void> {
     const bannedMembers = await this.bannedMemberRepository.findMany();
 
-    await this.redisService.setBannedMember(bannedMembers);
+    await this.redisService.bannedMemberInitial(bannedMembers);
   }
 }
