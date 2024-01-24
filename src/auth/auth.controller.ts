@@ -6,11 +6,11 @@ import { GoogleAuthGuard } from '../_common/_utils/guards/google.oauth.guard';
 import { Member } from '../_common/_utils/decorators/member.decorator';
 import { IPayload } from '../_common/jwt/jwt.interface';
 import { AccessToken } from '../_common/_utils/decorators/access-token.decorator';
-import { AuthHistoryPaginationDto } from './auth-history/auth-history.dto';
 import { IpAndCountry } from '../_common/_utils/decorators/ip-and-country.decorator';
 import { IIpAndCountry } from '../_common/_utils/interfaces/request.interface';
 import { KakaoAuthGuard } from '../_common/_utils/guards/kakao.oauth.guard';
 import { ISocial } from './interfaces/social.interface';
+import { AuthHistoryFindManyAndMetadataDto } from './auth-history/dtos/find-many-and-metadata/request.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -40,7 +40,7 @@ export class AuthController {
   }
 
   @Get('histories/me')
-  async historyFindManyAndCount(@Member() member: IPayload, @Query() query: AuthHistoryPaginationDto) {
-    return await this.authService.historyFindManyAndCount(member.id, query);
+  async historyFindManyAndMetadata(@Member() member: IPayload, @Query() query: AuthHistoryFindManyAndMetadataDto) {
+    return await this.authService.historyFindManyAndMetadata(member.id, query);
   }
 }
