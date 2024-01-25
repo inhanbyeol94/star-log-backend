@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../_common/prisma/prisma.service';
 import { Member, Prisma } from '@prisma/client';
 
@@ -20,15 +20,16 @@ export class MemberRepository {
     await this.memberRepository.softDelete({ id });
   }
 
-  async findUnique(id: string): Promise<Member | null> {
-    return this.memberRepository.findUnique({ where: { id } });
-  }
-
   async findFirstBySocialId(socialId: string): Promise<Member | null> {
     return this.memberRepository.findFirst({ where: { socialId } });
   }
 
   async findFirstByNickname(nickname: string): Promise<Member | null> {
     return this.memberRepository.findFirst({ where: { nickname } });
+  }
+  async findUniqueOrThrow(id: string): Promise<Member> {
+    const member = await this.memberRepository.findUnique({ where: { id } });
+    if (!member) throw new NotFoundException('존재하지 않는 멤버입니다.');
+    return member;
   }
 }

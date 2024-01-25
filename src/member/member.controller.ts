@@ -1,8 +1,8 @@
 import { Body, Controller, Delete, Get, Put } from '@nestjs/common';
 import { MemberService } from './member.service';
 import { Member } from 'src/_common/_utils/decorators/member.decorator';
-import { IPayload } from '../_common/jwt/jwt.interface';
-import { MemberUpdateDto } from './dtos/update/request.dto';
+import { IPayload } from '../_common/jwt/types/payload.interface';
+import { MemberUpdateDto } from './types/update/request.dto';
 
 @Controller('member')
 export class MemberController {

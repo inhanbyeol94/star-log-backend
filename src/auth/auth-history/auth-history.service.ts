@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { AuthHistoryRepository } from './auth-history.repository';
 import { logger } from '../../_common/logger/logger.service';
-import { IAuthHistoryFindManyAndMetadata } from './dtos/find-many-and-metadata/request.interface';
-import { IAuthHistoryCreate } from './dtos/create/request.interface';
+import { IAuthHistoryFindManyAndMetadata } from './types/find-many-and-metadata/request.interface';
+import { IAuthHistoryCreate } from './types/create/request.interface';
 
 @Injectable()
 export class AuthHistoryService {

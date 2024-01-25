@@ -1,7 +1,7 @@
-import { Prisma } from '@prisma/client';
 import { IsNotEmpty, IsNumber, IsString } from '@inhanbyeol/class-validator';
+import { ITagCreate } from './request.interface';
 
-export class TagCreateDto implements Prisma.TagUncheckedCreateInput {
+export class TagCreateDto implements ITagCreate {
   @IsNotEmpty()
   @IsString()
   name: string;

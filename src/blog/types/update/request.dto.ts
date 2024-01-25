@@ -1,7 +1,7 @@
 import { IsNotEmpty, IsString, MaxLength, MinLength } from '@inhanbyeol/class-validator';
-import { Prisma } from '@prisma/client';
+import { IBlogUpdate } from './request.interface';
 
-export class BlogCreateDto implements Prisma.BlogCreateWithoutMemberInput {
+export class BlogUpdateDto implements IBlogUpdate {
   @IsNotEmpty()
   @IsString()
   @MaxLength(255)

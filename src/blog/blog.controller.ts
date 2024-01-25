@@ -2,15 +2,15 @@ import { Body, Controller, Delete, Param, Patch, Post, Get, Query, UseGuards, Pu
 import { BlogService } from './blog.service';
 import { Blog, Tag } from '@prisma/client';
 import { Member } from '../_common/_utils/decorators/member.decorator';
-import { IPayload } from '../_common/jwt/jwt.interface';
+import { IPayload } from '../_common/jwt/types/payload.interface';
 import { UserAuthGuard } from '../_common/_utils/guards/user.auth.guard';
-import { TagCreateDto } from './tag/dtos/create/request.dto';
-import { BlogAndTagParamDto, BlogParamDto } from './dtos/param.request.dto';
-import { TagUpdateDto } from './tag/dtos/update/request.dto';
-import { BlogCreateDto } from './dtos/create/request.dto';
-import { BlogUpdateDto } from './dtos/update/request.dto';
-import { BlogFindManyAndMetaDataDto } from './dtos/find-many-and-meta-data/request.dto';
-import { BlogAddressDto } from './dtos/find-first-by-address/request.dto';
+import { TagCreateDto } from './tag/types/create/request.dto';
+import { BlogAndTagParamDto, BlogParamDto } from './types/param.request.dto';
+import { TagUpdateDto } from './tag/types/update/request.dto';
+import { BlogCreateDto } from './types/create/request.dto';
+import { BlogUpdateDto } from './types/update/request.dto';
+import { BlogFindManyAndMetaDataDto } from './types/find-many-and-meta-data/request.dto';
+import { BlogAddressDto } from './types/find-first-by-address/request.dto';
 
 /**
  * Blog 관련 요청을 처리하는 Controller Class

@@ -1,9 +1,13 @@
 import { ConflictException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { BlogRepository } from './blog.repository';
 import { MemberService } from '../member/member.service';
-import { Blog, Prisma, Tag } from '@prisma/client';
-import { IBlogFindManyAndMetaData } from './dtos/find-many-and-meta-data/request.interface';
+import { Blog, Tag } from '@prisma/client';
+import { IBlogFindManyAndMetaData } from './types/find-many-and-meta-data/request.interface';
 import { TagService } from './tag/tag.service';
+import { ITagCreate } from './tag/types/create/request.interface';
+import { ITagUpdate } from './tag/types/update/request.interface';
+import { IBlogCreate } from './types/create/request.interface';
+import { IBlogUpdate } from './types/update/request.interface';
 
 /**
  * Blog 관련 요청을 처리하는 Service Class
@@ -17,17 +21,17 @@ export class BlogService {
   ) {}
 
   /* 블로그 생성 */
-  async create(memberId: string, data: Prisma.BlogCreateWithoutMemberInput): Promise<string> {
-    await this.memberService.findUniqueOrThrow(memberId);
+  async create(memberId: string, data: IBlogCreate): Promise<string> {
+    await this.memberService.findUnique(memberId);
     await this.isExistByAddress(data.address);
 
-    await this.blogRepository.create({ ...data, member: { connect: { id: memberId } } });
+    await this.blogRepository.create(data, memberId);
     return '블로그 개설이 완료되었습니다.';
   }
 
   /* 블로그 수정 */
-  async update(id: number, memberId: string, data: Prisma.BlogUpdateInput): Promise<string> {
-    await this.memberService.findUniqueOrThrow(memberId);
+  async update(id: number, memberId: string, data: IBlogUpdate): Promise<string> {
+    await this.memberService.findUnique(memberId);
     const blog = await this.blogRepository.findUniqueOrThrow(id);
     await this.verifyAccessAuthorityOrThrow(blog.memberId, memberId);
     if (data.address) await this.isExistByAddress(data.address as string);
@@ -49,7 +53,7 @@ export class BlogService {
 
   /* 블로그 삭제 */
   async softDelete(id: number, memberId: string): Promise<string> {
-    await this.memberService.findUniqueOrThrow(memberId);
+    await this.memberService.findUnique(memberId);
     const blog = await this.blogRepository.findUniqueOrThrow(id);
     await this.verifyAccessAuthorityOrThrow(blog.memberId, memberId);
     await this.blogRepository.softDelete(id);
@@ -78,14 +82,14 @@ export class BlogService {
     if (blogMemberId !== memberId) throw new ForbiddenException('블로그에 대한 권한이 없습니다.');
   }
 
-  async tagCreate(id: number, memberId: string, data: Prisma.TagUncheckedCreateInput): Promise<string> {
+  async tagCreate(id: number, memberId: string, data: ITagCreate): Promise<string> {
     const blog = await this.blogRepository.findUniqueOrThrow(id);
     await this.verifyAccessAuthorityOrThrow(blog.memberId, memberId);
     await this.tagService.create(data);
     return '태그가 생성되었습니다.';
   }
 
-  async tagUpdate(id: number, memberId: string, tagId: number, data: Prisma.TagUpdateInput): Promise<string> {
+  async tagUpdate(id: number, memberId: string, tagId: number, data: ITagUpdate): Promise<string> {
     const blog = await this.blogRepository.findUniqueOrThrow(id);
     await this.verifyAccessAuthorityOrThrow(blog.memberId, memberId);
     await this.tagService.update(tagId, data);

@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { sign, verify } from 'jsonwebtoken';
-import { IPayload } from './jwt.interface';
+import { IPayload } from './types/payload.interface';
 import { ConfigService } from '@nestjs/config';
 import { Member } from '@prisma/client';
 

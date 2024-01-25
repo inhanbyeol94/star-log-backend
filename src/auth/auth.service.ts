@@ -6,8 +6,8 @@ import { RedisService } from '../_common/redis/redis.service';
 import { AuthHistoryService } from './auth-history/auth-history.service';
 import { IIpAndCountry } from '../_common/_utils/interfaces/request.interface';
 import { BannedMemberService } from '../member/banned-member/banned-member.service';
-import { ISocial } from './interfaces/social.interface';
-import { IAuthHistoryFindManyAndMetadata } from './auth-history/dtos/find-many-and-metadata/request.interface';
+import { ISocial } from './types/o-auth/request.interface';
+import { IAuthHistoryFindManyAndMetadata } from './auth-history/types/find-many-and-metadata/request.interface';
 
 @Injectable()
 export class AuthService {
@@ -70,7 +70,7 @@ export class AuthService {
   }
 
   async historyFindManyAndMetadata(id: string, query: IAuthHistoryFindManyAndMetadata) {
-    await this.memberService.findUniqueOrThrow(id);
+    await this.memberService.findUnique(id);
     return await this.authHistoryService.findManyAndMetadata(id, query);
   }
 }

@@ -1,16 +1,18 @@
 import { Injectable } from '@nestjs/common';
 import { TagRepository } from './tag.repository';
-import { Prisma, Tag } from '@prisma/client';
+import { Tag } from '@prisma/client';
+import { ITagCreate } from './types/create/request.interface';
+import { ITagUpdate } from './types/update/request.interface';
 
 @Injectable()
 export class TagService {
   constructor(private tagRepository: TagRepository) {}
 
-  async create(data: Prisma.TagUncheckedCreateInput): Promise<Tag> {
+  async create(data: ITagCreate): Promise<Tag> {
     return await this.tagRepository.create(data);
   }
 
-  async update(id: number, data: Prisma.TagUpdateInput): Promise<Tag> {
+  async update(id: number, data: ITagUpdate): Promise<Tag> {
     await this.tagRepository.findUniqueOrThrow(id);
     return await this.tagRepository.update(id, data);
   }

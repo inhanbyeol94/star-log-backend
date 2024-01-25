@@ -1,6 +1,8 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../../_common/prisma/prisma.service';
-import { Prisma, Tag } from '@prisma/client';
+import { Tag } from '@prisma/client';
+import { ITagCreate } from './types/create/request.interface';
+import { ITagUpdate } from './types/update/request.interface';
 
 @Injectable()
 export class TagRepository {
@@ -8,11 +10,11 @@ export class TagRepository {
 
   private tagRepository = this.prisma.extendedClient.tag;
 
-  async create(data: Prisma.TagUncheckedCreateInput): Promise<Tag> {
+  async create(data: ITagCreate): Promise<Tag> {
     return this.tagRepository.create({ data });
   }
 
-  async update(id: number, data: Prisma.TagUpdateInput): Promise<Tag> {
+  async update(id: number, data: ITagUpdate): Promise<Tag> {
     return this.tagRepository.update({ where: { id }, data });
   }
 

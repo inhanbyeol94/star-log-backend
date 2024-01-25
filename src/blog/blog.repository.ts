@@ -1,33 +1,27 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../_common/prisma/prisma.service';
 import { Blog, Prisma } from '@prisma/client';
-import { IBlogFindManyAndMetaData } from './dtos/find-many-and-meta-data/request.interface';
-import { PaginationService } from '../_common/pagination/pagination.service';
+import { IBlogFindManyAndMetaData } from './types/find-many-and-meta-data/request.interface';
+import { IBlogCreate } from './types/create/request.interface';
+import { IBlogUpdate } from './types/update/request.interface';
+import { findManyMetadata } from '../_common/_utils/functions/metadata.function';
 
 /**
  * Blog 관련 요청을 처리하는 Repository Class
  */
 @Injectable()
 export class BlogRepository {
-  constructor(
-    private prisma: PrismaService,
-    private paginationService: PaginationService,
-  ) {}
+  constructor(private prisma: PrismaService) {}
   private blogRepository = this.prisma.extendedClient.blog;
 
   /* 블로그 생성 */
-  async create(data: Prisma.BlogCreateInput): Promise<Blog> {
-    return this.blogRepository.create({ data });
+  async create(data: IBlogCreate, memberId: string): Promise<Blog> {
+    return this.blogRepository.create({ data: { ...data, memberId } });
   }
 
   /* 블로그 수정 */
-  async update(id: number, data: Prisma.BlogUpdateInput): Promise<Blog> {
+  async update(id: number, data: IBlogUpdate): Promise<Blog> {
     return this.blogRepository.update({ where: { id }, data });
-  }
-
-  /* 블로그 전체조회 */
-  async findMany(): Promise<Blog[]> {
-    return this.blogRepository.findMany();
   }
 
   /* 블로그 삭제 */
@@ -56,17 +50,12 @@ export class BlogRepository {
       this.blogRepository.findMany({ take: data.take, skip: (data.page - 1) * data.take, orderBy: { [data.orderBy]: data.sortOrder } }),
       this.blogRepository.count({ where: options.where }),
     ]);
-    return [blogs, this.paginationService.metaData(count, data)];
+    return [blogs, findManyMetadata(count, data)];
   }
 
   /* 블로그 주소찾기 */
   async findFirstByAddress(address: string): Promise<Blog | null> {
     return this.blogRepository.findFirst({ where: { address }, include: { member: true, tags: true } });
-  }
-
-  /* 블로그 ID 찾기 */
-  async findUnique(id: number): Promise<Blog | null> {
-    return this.blogRepository.findFirst({ where: { id } });
   }
 
   async findUniqueOrThrow(id: number): Promise<Blog> {
