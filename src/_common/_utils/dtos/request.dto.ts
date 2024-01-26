@@ -1,4 +1,4 @@
-import { IsIn, IsNotEmpty, IsNumber, IsOptional, IsString } from '@inhanbyeol/class-validator';
+import { IsNumber, IsOptional } from '@inhanbyeol/class-validator';
 import { Max, Min } from 'class-validator';
 import { IPagination } from '../interfaces/request.interface';
 

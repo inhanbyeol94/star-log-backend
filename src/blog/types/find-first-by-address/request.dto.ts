@@ -1,6 +1,6 @@
 import { IsNotEmpty, IsString } from '@inhanbyeol/class-validator';
 
-export class BlogAddressDto {
+export class BlogFindFirstByAddressParamDto {
   @IsNotEmpty()
   @IsString()
   address: string;

@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsString, MaxLength, MinLength } from '@inhanbyeol/class-validator';
+import { IsNotEmpty, IsNumber, IsString, MaxLength, MinLength } from '@inhanbyeol/class-validator';
 import { IBlogUpdate } from './request.interface';
 
 export class BlogUpdateDto implements IBlogUpdate {
@@ -19,4 +19,10 @@ export class BlogUpdateDto implements IBlogUpdate {
   @MaxLength(100)
   @MinLength(2)
   description: string;
+}
+
+export class BlogUpdateParamDto {
+  @IsNotEmpty()
+  @IsNumber()
+  id: number;
 }

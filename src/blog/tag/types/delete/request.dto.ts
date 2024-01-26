@@ -1,12 +1,10 @@
 import { IsNotEmpty, IsNumber } from '@inhanbyeol/class-validator';
 
-export class BlogParamDto {
+export class TagDeleteParamDto {
   @IsNotEmpty()
   @IsNumber()
   id: number;
-}
 
-export class BlogAndTagParamDto extends BlogParamDto {
   @IsNotEmpty()
   @IsNumber()
   tagId: number;

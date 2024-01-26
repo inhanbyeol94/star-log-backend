@@ -8,8 +8,8 @@ import { ITagUpdate } from './types/update/request.interface';
 export class TagService {
   constructor(private tagRepository: TagRepository) {}
 
-  async create(data: ITagCreate): Promise<Tag> {
-    return await this.tagRepository.create(data);
+  async create(data: ITagCreate, blogId: number): Promise<Tag> {
+    return await this.tagRepository.create(data, blogId);
   }
 
   async update(id: number, data: ITagUpdate): Promise<Tag> {

@@ -85,7 +85,7 @@ export class BlogService {
   async tagCreate(id: number, memberId: string, data: ITagCreate): Promise<string> {
     const blog = await this.blogRepository.findUniqueOrThrow(id);
     await this.verifyAccessAuthorityOrThrow(blog.memberId, memberId);
-    await this.tagService.create(data);
+    await this.tagService.create(data, id);
     return '태그가 생성되었습니다.';
   }
 

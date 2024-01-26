@@ -10,8 +10,8 @@ export class TagRepository {
 
   private tagRepository = this.prisma.extendedClient.tag;
 
-  async create(data: ITagCreate): Promise<Tag> {
-    return this.tagRepository.create({ data });
+  async create(data: ITagCreate, blogId: number): Promise<Tag> {
+    return this.tagRepository.create({ data: { ...data, blogId } });
   }
 
   async update(id: number, data: ITagUpdate): Promise<Tag> {
