@@ -34,8 +34,6 @@ export class PrismaService extends PrismaClient<Prisma.PrismaClientOptions, 'que
   async onModuleInit(): Promise<void> {
     const { query, error, warn, info } = PrismaConfig.instance.options;
 
-    console.log(PrismaConfig.instance.options);
-
     error &&
       this.$on('error', (event) => {
         this.logger.error(event);
