@@ -12,7 +12,6 @@ export const prismaExtendedClient = (prismaClient: PrismaClient) =>
           }
 
           (args as any).include && ((args as any).include = includeSoftDelete((args as any).include, model));
-
           return query(args);
         },
 
@@ -24,7 +23,6 @@ export const prismaExtendedClient = (prismaClient: PrismaClient) =>
           }
 
           (args as any).include && ((args as any).include = includeSoftDelete((args as any).include, model));
-
           return query(args);
         },
 
@@ -62,6 +60,18 @@ export const prismaExtendedClient = (prismaClient: PrismaClient) =>
 
           return query(args);
         },
+
+        async count({ model, operation, args, query }) {
+          const target = Prisma.dmmf.datamodel.models.find((m) => m.name === model);
+
+          if (target?.fields.some((f) => f.name === 'deletedAt')) {
+            args.where = { ...args.where, deletedAt: null };
+          }
+
+          (args as any).include && ((args as any).include = includeSoftDelete((args as any).include, model));
+
+          return query(args);
+        },
       },
     },
     model: {
@@ -88,22 +98,28 @@ function includeSoftDelete(obj: object, model: Prisma.ModelName) {
 
   for (const key in obj) {
     if (obj[key] instanceof Object) {
-      includeSoftDelete(obj[key], model);
+      const includeModelInfo = target?.fields.find((m) => m.name === key);
+      includeSoftDelete(obj[key], key !== 'include' ? (includeModelInfo?.type as Prisma.ModelName as Prisma.ModelName) : model);
     }
 
     if (!obj[key].deletedAt) {
       if (obj[key].where) {
         const includeModelInfo = target?.fields.find((m) => m.name === key);
         const includeTarget = Prisma.dmmf.datamodel.models.find((m) => m.name === includeModelInfo?.type);
-        if (includeTarget?.fields.some((f) => f.name === 'deletedAt')) {
-          obj[key].where = { ...obj[key].where, deletedAt: null };
+
+        if (includeTarget?.fields.some((f) => f.name === 'deletedAt') && includeModelInfo?.isList) {
+          obj[key] = { where: { ...obj[key].where, deletedAt: null } };
+        } else if (includeTarget?.fields.some((f) => f.name === 'deletedAt') && !includeModelInfo?.isList && !includeModelInfo?.isRequired) {
+          obj[key] = { where: { ...obj[key].where, deletedAt: null } };
         }
       }
 
       if (obj[key] === true) {
         const includeModelInfo = target?.fields.find((m) => m.name === key);
         const includeTarget = Prisma.dmmf.datamodel.models.find((m) => m.name === includeModelInfo?.type);
-        if (includeTarget?.fields.some((f) => f.name === 'deletedAt')) {
+        if (includeTarget?.fields.some((f) => f.name === 'deletedAt') && includeModelInfo?.isList) {
+          obj[key] = { where: { ...obj[key].where, deletedAt: null } };
+        } else if (includeTarget?.fields.some((f) => f.name === 'deletedAt') && !includeModelInfo?.isList && !includeModelInfo?.isRequired) {
           obj[key] = { where: { ...obj[key].where, deletedAt: null } };
         }
       }
@@ -111,11 +127,10 @@ function includeSoftDelete(obj: object, model: Prisma.ModelName) {
       if (obj[key].include) {
         const includeModelInfo = target?.fields.find((m) => m.name === key);
         const includeTarget = Prisma.dmmf.datamodel.models.find((m) => m.name === includeModelInfo?.type);
-        if (includeTarget?.fields.some((f) => f.name === 'deletedAt')) {
-          obj[key] = {
-            ...obj[key],
-            where: { ...obj[key].where, deletedAt: null },
-          };
+        if (includeTarget?.fields.some((f) => f.name === 'deletedAt') && includeModelInfo?.isList) {
+          obj[key] = { where: { ...obj[key].where, deletedAt: null } };
+        } else if (includeTarget?.fields.some((f) => f.name === 'deletedAt') && !includeModelInfo?.isList && !includeModelInfo?.isRequired) {
+          obj[key] = { where: { ...obj[key].where, deletedAt: null } };
         }
       }
     }
