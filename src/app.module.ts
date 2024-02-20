@@ -11,6 +11,7 @@ import { BannedMemberModule } from './member/banned-member/banned-member.module'
 import { AuthHistoryModule } from './auth/auth-history/auth-history.module';
 import { BlogModule } from './blog/blog.module';
 import { TagModule } from './blog/tag/tag.module';
+import { DocumentModule } from './blog/document/document.module';
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { TagModule } from './blog/tag/tag.module';
     BannedMemberModule,
     AuthHistoryModule,
     TagModule,
+    DocumentModule,
   ],
   controllers: [],
   providers: [],
