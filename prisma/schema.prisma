@@ -69,16 +69,17 @@ model BannedMember {
 }
 
 model Blog {
-  id          Int       @id @default(autoincrement())
-  memberId    String    @unique @map("member_id")
-  address     String    @db.VarChar()
-  title       String    @db.VarChar()
-  description String    @db.VarChar()
-  createdAt   DateTime  @default(now()) @map("created_at")
-  updatedAt   DateTime? @updatedAt @map("updated_at")
-  deletedAt   DateTime? @map("deleted_at")
-  member      Member    @relation(fields: [memberId], references: [id])
+  id          Int        @id @default(autoincrement())
+  memberId    String     @unique @map("member_id")
+  address     String     @db.VarChar()
+  title       String     @db.VarChar()
+  description String     @db.VarChar()
+  createdAt   DateTime   @default(now()) @map("created_at")
+  updatedAt   DateTime?  @updatedAt @map("updated_at")
+  deletedAt   DateTime?  @map("deleted_at")
+  member      Member     @relation(fields: [memberId], references: [id])
   tags        Tag[]
+  Document    Document[]
 }
 
 model Tag {
@@ -101,8 +102,10 @@ model Document {
   createdAt     DateTime  @default(now()) @map("created_at")
   updatedAt     DateTime? @updatedAt @map("updated_at")
   deletedAt     DateTime? @map("deleted_at")
+  Blog          Blog      @relation(fields: [blogId], references: [id])
   tags          Tag[]     @relation("join:documentAndTag")
   comments      Comment[]
+  blogId        Int
 }
 
 model Comment {
