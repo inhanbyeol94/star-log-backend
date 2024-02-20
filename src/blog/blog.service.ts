@@ -8,6 +8,10 @@ import { ITagCreate } from './tag/types/create/request.interface';
 import { ITagUpdate } from './tag/types/update/request.interface';
 import { IBlogCreate } from './types/create/request.interface';
 import { IBlogUpdate } from './types/update/request.interface';
+import { IDocumentCreate } from './document/types/create/request.interface';
+import { DocumentService } from './document/document.service';
+import { IDocumentUpdate } from './document/types/update/request.interface';
+import { IDocumentFindManyAndMetaData } from './document/types/find-many-and-meta-data/request.interface';
 
 /**
  * Blog 관련 요청을 처리하는 Service Class
@@ -18,6 +22,7 @@ export class BlogService {
     private blogRepository: BlogRepository,
     private memberService: MemberService,
     private tagService: TagService,
+    private documentService: DocumentService,
   ) {}
 
   /* 블로그 생성 */
@@ -111,5 +116,34 @@ export class BlogService {
   async tagFindManyById(id: number): Promise<Tag[]> {
     await this.blogRepository.findUniqueOrThrow(id);
     return await this.tagService.findManyByBlogId(id);
+  }
+
+  async documentCreate(id: number, memberId: string, data: IDocumentCreate): Promise<string> {
+    const blog = await this.blogRepository.findUniqueOrThrow(id);
+    await this.verifyAccessAuthorityOrThrow(blog.memberId, memberId);
+    if (data.allowComments === undefined) data.allowComments = false;
+    if (data.allowPublic === undefined) data.allowPublic = false;
+    await this.documentService.create(data, id);
+    return '문서가 생성되었습니다.';
+  }
+
+  async documentUpdate(id: number, memberId: string, documentId: number, data: IDocumentUpdate): Promise<string> {
+    const blog = await this.blogRepository.findUniqueOrThrow(id);
+    await this.verifyAccessAuthorityOrThrow(blog.memberId, memberId);
+    if (data.allowComments === undefined) data.allowComments = false;
+    if (data.allowPublic === undefined) data.allowPublic = false;
+    await this.documentService.update(documentId, data);
+    return '문서를 수정하였습니다.';
+  }
+
+  async documentSoftDelete(id: number, memberId: string, documentId: number): Promise<string> {
+    const blog = await this.blogRepository.findUniqueOrThrow(id);
+    await this.verifyAccessAuthorityOrThrow(blog.memberId, memberId);
+    await this.documentService.softDelete(documentId);
+    return '문서를 삭제하였습니다.';
+  }
+
+  async documentFindManyAndMetaData(data: IDocumentFindManyAndMetaData) {
+    return await this.documentService.findManyAndMetaData(data);
   }
 }
