@@ -19,6 +19,10 @@ import { DocumentCreateDto, DocumentCreateParamDto } from './document/types/crea
 import { DocumentUpdateDto, DocumentUpdateParamDto } from './document/types/update/request.dto';
 import { DocumentDeleteParamDto } from './document/types/delete/request.dto';
 import { DocumentFindManyAndMetaDataDto } from './document/types/find-many-and-meta-data/request.dto';
+import { CommentCreateDto, CommentCreateParamDto } from './document/comment/types/create/request.dto';
+import { CommentUpdateDto, CommentUpdateParamDto } from './document/comment/types/update/request.dto';
+import { CommentDeleteParamDto } from './document/comment/types/delete/request.dto';
+import { CommentFindManyAndMetaDataDto } from './document/comment/types/find-many-and-meta-data/request.dto';
 
 /**
  * Blog 관련 요청을 처리하는 Controller Class
@@ -50,6 +54,11 @@ export class BlogController {
   @Get('documents')
   async documentFindManyAndMetaData(@Query() query: DocumentFindManyAndMetaDataDto) {
     return await this.blogService.documentFindManyAndMetaData(query);
+  }
+
+  @Get('comments')
+  async commentFindManyAndMetaData(@Query() query: CommentFindManyAndMetaDataDto) {
+    return await this.blogService.commentFindManyAndMetaData(query);
   }
 
   /* 블로그 ID별 조회 */
@@ -115,5 +124,23 @@ export class BlogController {
   @UseGuards(UserAuthGuard)
   async documentDelete(@Member() member: IPayload, @Param() param: DocumentDeleteParamDto): Promise<string> {
     return await this.blogService.documentSoftDelete(param.id, member.id, param.documentId);
+  }
+
+  @Post(':id/comments')
+  @UseGuards(UserAuthGuard)
+  async commentCreate(@Member() member: IPayload, @Body() body: CommentCreateDto, @Param() param: CommentCreateParamDto): Promise<string> {
+    return await this.blogService.commentCreate(param.id, member.id, body);
+  }
+
+  @Patch(':id/comments/:commentId')
+  @UseGuards(UserAuthGuard)
+  async commentUpdate(@Member() member: IPayload, @Body() body: CommentUpdateDto, @Param() param: CommentUpdateParamDto): Promise<string> {
+    return await this.blogService.commentUpdate(param.id, member.id, param.commentId, body);
+  }
+
+  @Delete(':id/comments/:commentId')
+  @UseGuards(UserAuthGuard)
+  async commentDelete(@Member() member: IPayload, @Param() param: CommentDeleteParamDto): Promise<string> {
+    return await this.blogService.commentSoftDelete(param.id, member.id, param.commentId);
   }
 }

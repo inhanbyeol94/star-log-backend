@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { ForbiddenException, Injectable } from '@nestjs/common';
 import { DocumentRepository } from './document.repository';
 import { IDocumentCreate } from './types/create/request.interface';
 import { Document } from '@Prisma/client';
@@ -31,5 +31,9 @@ export class DocumentService {
   /* 문서 조회 */
   async findManyAndMetaData(data: IDocumentFindManyAndMetaData) {
     return await this.documentRepository.findManyAndMetaData(data);
+  }
+
+  async findUnique(id: number): Promise<Document> {
+    return await this.documentRepository.findUniqueOrThrow(id);
   }
 }

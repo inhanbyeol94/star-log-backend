@@ -12,6 +12,7 @@ import { AuthHistoryModule } from './auth/auth-history/auth-history.module';
 import { BlogModule } from './blog/blog.module';
 import { TagModule } from './blog/tag/tag.module';
 import { DocumentModule } from './blog/document/document.module';
+import { CommentModule } from './blog/document/comment/comment.module';
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { DocumentModule } from './blog/document/document.module';
     AuthHistoryModule,
     TagModule,
     DocumentModule,
+    CommentModule,
   ],
   controllers: [],
   providers: [],
