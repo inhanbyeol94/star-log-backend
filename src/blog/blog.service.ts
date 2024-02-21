@@ -12,6 +12,10 @@ import { IDocumentCreate } from './document/types/create/request.interface';
 import { DocumentService } from './document/document.service';
 import { IDocumentUpdate } from './document/types/update/request.interface';
 import { IDocumentFindManyAndMetaData } from './document/types/find-many-and-meta-data/request.interface';
+import { ICommentCreate } from './document/comment/types/create/request.interface';
+import { CommentService } from './document/comment/comment.service';
+import { ICommentUpdate } from './document/comment/types/update/request.interface';
+import { ICommentFindManyAndMetaData } from './document/comment/types/find-many-and-meta-data/request.interface';
 
 /**
  * Blog 관련 요청을 처리하는 Service Class
@@ -23,6 +27,7 @@ export class BlogService {
     private memberService: MemberService,
     private tagService: TagService,
     private documentService: DocumentService,
+    private commentService: CommentService,
   ) {}
 
   /* 블로그 생성 */
@@ -145,5 +150,31 @@ export class BlogService {
 
   async documentFindManyAndMetaData(data: IDocumentFindManyAndMetaData) {
     return await this.documentService.findManyAndMetaData(data);
+  }
+
+  async commentCreate(id: number, memberId: string, data: ICommentCreate): Promise<string> {
+    await this.documentService.findUnique(id);
+    if (data.allowPublic === undefined) data.allowPublic = false;
+    await this.commentService.create(data, memberId);
+    return '댓글이 생성되었습니다.';
+  }
+
+  async commentUpdate(id: number, memberId: string, documentId: number, data: ICommentUpdate): Promise<string> {
+    const comment = await this.commentService.findUnique(id);
+    await this.commentService.verifyAccessAuthorityOrThrow(comment.memberId, memberId);
+    if (data.allowPublic === undefined) data.allowPublic = false;
+    await this.commentService.update(documentId, data);
+    return '댓글이 수정되었습니다.';
+  }
+
+  async commentSoftDelete(id: number, memberId: string, commentId: number): Promise<string> {
+    const comment = await this.commentService.findUnique(id);
+    await this.commentService.verifyAccessAuthorityOrThrow(comment.memberId, memberId);
+    await this.commentService.softDelete(commentId);
+    return '댓글을 삭제하였습니다.';
+  }
+
+  async commentFindManyAndMetaData(data: ICommentFindManyAndMetaData) {
+    return await this.commentService.findManyAndMetaData(data);
   }
 }
