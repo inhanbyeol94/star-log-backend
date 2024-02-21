@@ -15,6 +15,10 @@ import { BlogDeleteParamDto } from './types/delete/request.dto';
 import { TagDeleteParamDto } from './tag/types/delete/request.dto';
 import { TagFindManyByIdParamDto } from './tag/types/tag-find-many-by-id/request.dto';
 import { TagFindUniqueParamDto } from './tag/types/tag-find-unique/request.dto';
+import { DocumentCreateDto, DocumentCreateParamDto } from './document/types/create/request.dto';
+import { DocumentUpdateDto, DocumentUpdateParamDto } from './document/types/update/request.dto';
+import { DocumentDeleteParamDto } from './document/types/delete/request.dto';
+import { DocumentFindManyAndMetaDataDto } from './document/types/find-many-and-meta-data/request.dto';
 
 /**
  * Blog 관련 요청을 처리하는 Controller Class
@@ -41,6 +45,11 @@ export class BlogController {
   @Get()
   async findManyAndMetaData(@Query() query: BlogFindManyAndMetaDataDto) {
     return await this.blogService.findManyAndMetaData(query);
+  }
+
+  @Get('documents')
+  async documentFindManyAndMetaData(@Query() query: DocumentFindManyAndMetaDataDto) {
+    return await this.blogService.documentFindManyAndMetaData(query);
   }
 
   /* 블로그 ID별 조회 */
@@ -88,5 +97,23 @@ export class BlogController {
   @Get(':id/tags/:tagId')
   async tagFindUnique(@Param() param: TagFindUniqueParamDto): Promise<Tag> {
     return await this.blogService.tagFindUnique(param.id, param.tagId);
+  }
+
+  @Post(':id/documents')
+  @UseGuards(UserAuthGuard)
+  async documentCreate(@Member() member: IPayload, @Body() body: DocumentCreateDto, @Param() param: DocumentCreateParamDto): Promise<string> {
+    return await this.blogService.documentCreate(param.id, member.id, body);
+  }
+
+  @Patch(':id/documents/:documentId')
+  @UseGuards(UserAuthGuard)
+  async documentUpdate(@Member() member: IPayload, @Body() body: DocumentUpdateDto, @Param() param: DocumentUpdateParamDto): Promise<string> {
+    return await this.blogService.documentUpdate(param.id, member.id, param.documentId, body);
+  }
+
+  @Delete(':id/documents/:documentId')
+  @UseGuards(UserAuthGuard)
+  async documentDelete(@Member() member: IPayload, @Param() param: DocumentDeleteParamDto): Promise<string> {
+    return await this.blogService.documentSoftDelete(param.id, member.id, param.documentId);
   }
 }

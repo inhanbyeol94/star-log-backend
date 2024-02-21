@@ -29,7 +29,8 @@ export class BannedMemberService implements OnModuleInit {
 
   async isValidBannedMember(memberId: string): Promise<boolean> {
     const bannedMember = await this.redisService.bannedMemberFindMany(memberId);
-    return !!bannedMember;
+    if (bannedMember.length === 0) return false;
+    return true;
   }
 
   async initializeBannedMembers(): Promise<void> {
